@@ -1,0 +1,104 @@
+<template>
+  <div class="flex flex-col h-full">
+    <nav class="flex-1 px-2 py-4 space-y-1">
+      <router-link
+        v-for="item in menuItems"
+        :key="item.name"
+        :to="item.path"
+        :class="[
+          'group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors',
+          $route.path === item.path
+            ? 'bg-primary-100 text-primary-900'
+            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+        ]"
+      >
+        <component
+          :is="getIcon(item.icon)"
+          :class="[
+            'mr-3 h-5 w-5',
+            $route.path === item.path
+              ? 'text-primary-500'
+              : 'text-gray-400 group-hover:text-gray-500'
+          ]"
+        />
+        {{ item.name }}
+        <span
+          v-if="item.badge"
+          class="ml-auto inline-block py-0.5 px-2 text-xs bg-gray-100 rounded-full"
+        >
+          {{ item.badge }}
+        </span>
+      </router-link>
+    </nav>
+
+    <div class="px-2 py-4 border-t border-gray-200">
+      <div class="flex items-center px-2 py-2 text-sm text-gray-500">
+        <HelpCircle class="mr-3 h-5 w-5" />
+        Pomoc i wsparcie
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import {
+  Home,
+  Wallet,
+  Receipt,
+  Calendar,
+  BarChart3,
+  Settings,
+  HelpCircle
+} from 'lucide-vue-next'
+import type { MenuItem } from '@/types'
+
+const route = useRoute()
+
+const menuItems = computed<MenuItem[]>(() => [
+  {
+    name: 'Dashboard',
+    path: '/dashboard',
+    icon: 'Home'
+  },
+  {
+    name: 'Budżet',
+    path: '/budget',
+    icon: 'Wallet'
+  },
+  {
+    name: 'Wydatki',
+    path: '/expenses',
+    icon: 'Receipt'
+  },
+  {
+    name: 'Planowanie',
+    path: '/planning',
+    icon: 'Calendar'
+  },
+  {
+    name: 'Raporty',
+    path: '/reports',
+    icon: 'BarChart3'
+  },
+  {
+    name: 'Ustawienia',
+    path: '/settings',
+    icon: 'Settings'
+  }
+])
+
+const getIcon = (iconName: string) => {
+  const icons = {
+    Home,
+    Wallet,
+    Receipt,
+    Calendar,
+    BarChart3,
+    Settings,
+    HelpCircle
+  }
+  return icons[iconName as keyof typeof icons] || Home
+}
+</script>
