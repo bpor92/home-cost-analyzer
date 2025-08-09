@@ -59,7 +59,7 @@ defineEmits<{
 const inputId = computed(() => `input-${Math.random().toString(36).substr(2, 9)}`)
 
 const inputClasses = computed(() => {
-  const baseClasses = 'block w-full rounded-md shadow-sm transition-colors sm:text-sm'
+  const baseClasses = 'block w-full rounded-md shadow-sm transition-colors sm:text-sm text-gray-900 placeholder-gray-400'
   const normalClasses = 'border-gray-300 focus:border-primary-500 focus:ring-primary-500'
   const errorClasses = 'border-red-300 focus:border-red-500 focus:ring-red-500'
   const disabledClasses = 'bg-gray-50 text-gray-500 cursor-not-allowed'
