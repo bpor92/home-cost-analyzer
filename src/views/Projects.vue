@@ -16,7 +16,7 @@
     <Card v-if="projectsStore.hasCurrentProject" class="border-blue-200 bg-blue-50">
       <div class="flex items-start justify-between">
         <div>
-          <h3 class="font-medium text-blue-900">Aktualny projekt</h3>
+          <h3 class="font-medium text-gray-900">Aktualny projekt</h3>
           <h2 class="text-xl font-semibold text-blue-900 mt-1">
             {{ projectsStore.currentProject?.name }}
           </h2>
@@ -78,7 +78,7 @@
                 <h4 class="font-medium">{{ project.name }}</h4>
                 <span 
                   v-if="projectsStore.currentProject?.id === project.id"
-                  class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full"
+                  class="px-2 py-1 text-xs bg-blue-600 text-white font-medium rounded-full"
                 >
                   Aktualny
                 </span>
