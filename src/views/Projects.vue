@@ -36,8 +36,8 @@
           </div>
         </div>
         <div class="flex gap-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             @click="editProject(projectsStore.currentProject!)"
           >
@@ -51,7 +51,7 @@
     <Card>
       <div class="p-6">
         <h3 class="text-lg font-medium mb-4 text-gray-900">Wszystkie projekty</h3>
-        
+
         <div v-if="loading" class="flex justify-center py-8">
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
         </div>
@@ -74,9 +74,9 @@
             ]"
           >
             <div class="flex-1">
-              <div class="flex items-center gap-3">
-                <h4 class="font-medium">{{ project.name }}</h4>
-                <span 
+              <div class="flex items-center gap-3 ">
+                <h4 class="font-medium text-gray-600">{{ project.name }}</h4>
+                <span
                   v-if="projectsStore.currentProject?.id === project.id"
                   class="px-2 py-1 text-xs bg-blue-600 text-white font-medium rounded-full"
                 >
@@ -88,7 +88,7 @@
                 <span>Utworzono: {{ formatDate(project.created_at) }}</span>
               </div>
             </div>
-            
+
             <div class="flex items-center gap-2">
               <Button
                 v-if="projectsStore.currentProject?.id !== project.id"
@@ -125,7 +125,7 @@
         <h3 class="text-lg font-medium mb-4">
           {{ editingProject ? 'Edytuj projekt' : 'Nowy projekt' }}
         </h3>
-        
+
         <form @submit.prevent="saveProject" class="space-y-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">
@@ -137,7 +137,7 @@
               required
             />
           </div>
-          
+
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">
               Całkowity budżet (zł)
@@ -151,7 +151,7 @@
               required
             />
           </div>
-          
+
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">
               Własny budżet (zł)
@@ -166,7 +166,7 @@
               required
             />
           </div>
-          
+
           <div class="flex justify-end gap-3 pt-4">
             <Button
               type="button"
@@ -191,10 +191,10 @@
       <div class="p-6">
         <h3 class="text-lg font-medium mb-4 text-red-800">Usuń projekt</h3>
         <p class="text-sm text-gray-600 mb-6">
-          Czy na pewno chcesz usunąć projekt "{{ projectToDelete?.name }}"? 
+          Czy na pewno chcesz usunąć projekt "{{ projectToDelete?.name }}"?
           Ta operacja jest nieodwracalna i usunie wszystkie powiązane dane.
         </p>
-        
+
         <div class="flex justify-end gap-3">
           <Button
             variant="outline"
@@ -266,7 +266,7 @@ const cancelEdit = () => {
 
 const saveProject = async () => {
   saving.value = true
-  
+
   try {
     if (editingProject.value) {
       // Update existing project
@@ -275,7 +275,7 @@ const saveProject = async () => {
         total_budget: projectForm.total_budget,
         own_budget: projectForm.own_budget
       })
-      
+
       if (updated) {
         projectsStore.updateProject(updated)
       }
@@ -286,7 +286,7 @@ const saveProject = async () => {
         total_budget: projectForm.total_budget,
         own_budget: projectForm.own_budget
       })
-      
+
       if (newProject) {
         projectsStore.addProject(newProject)
         // Set as current project if it's the first one
@@ -295,7 +295,7 @@ const saveProject = async () => {
         }
       }
     }
-    
+
     showCreateModal.value = false
     resetForm()
   } finally {
@@ -314,15 +314,15 @@ const confirmDelete = (project: Project) => {
 
 const deleteProject = async () => {
   if (!projectToDelete.value) return
-  
+
   deleting.value = true
-  
+
   try {
     const success = await deleteProjectApi(projectToDelete.value.id)
     if (success) {
       projectsStore.removeProject(projectToDelete.value.id)
     }
-    
+
     showDeleteModal.value = false
     projectToDelete.value = null
   } finally {

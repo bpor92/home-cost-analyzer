@@ -83,39 +83,54 @@
     </div>
 
     <div v-else-if="viewMode === 'gantt'" class="overflow-x-auto">
-      <div class="min-w-full">
-        <div class="grid grid-cols-12 gap-1 mb-4 text-xs text-gray-600">
-          <div
-            v-for="month in monthHeaders"
-            :key="month"
-            class="text-center font-medium"
-          >
-            {{ month }}
+      <div class="flex">
+        <!-- Phase names column -->
+        <div class="flex-shrink-0 w-48 pr-4">
+          <div class="h-8 mb-4"></div> <!-- Spacer for header alignment -->
+          <div class="space-y-2">
+            <div
+              v-for="phase in sortedPhasesWithDates"
+              :key="phase.id"
+              class="h-8 flex items-center text-sm font-medium text-gray-900 truncate"
+            >
+              {{ phase.name }}
+            </div>
           </div>
         </div>
         
-        <div class="space-y-2">
-          <div
-            v-for="phase in sortedPhasesWithDates"
-            :key="phase.id"
-            class="flex items-center"
-          >
-            <div class="w-48 pr-4 text-sm font-medium text-gray-900 truncate">
-              {{ phase.name }}
+        <!-- Scrollable timeline area -->
+        <div class="flex-1 min-w-0">
+          <div class="min-w-max">
+            <!-- Month headers -->
+            <div class="flex gap-1 mb-4 text-xs text-gray-600 h-8 items-center">
+              <div
+                v-for="month in monthHeaders"
+                :key="month"
+                class="w-24 text-center font-medium flex-shrink-0"
+              >
+                {{ month }}
+              </div>
             </div>
             
-            <div class="flex-1 grid grid-cols-12 gap-1 h-8">
+            <!-- Timeline bars -->
+            <div class="space-y-2">
               <div
-                v-for="(month, monthIndex) in monthHeaders"
-                :key="monthIndex"
-                class="relative bg-gray-50 rounded"
+                v-for="phase in sortedPhasesWithDates"
+                :key="phase.id"
+                class="flex gap-1 h-8"
               >
                 <div
-                  v-if="isPhaseInMonth(phase, monthIndex)"
-                  class="absolute inset-0 rounded transition-colors"
-                  :class="getGanttBarClass(phase.status)"
-                  :style="getGanttBarStyle(phase, monthIndex)"
-                ></div>
+                  v-for="(month, monthIndex) in monthHeaders"
+                  :key="monthIndex"
+                  class="relative bg-gray-50 rounded w-24 flex-shrink-0"
+                >
+                  <div
+                    v-if="isPhaseInMonth(phase, monthIndex)"
+                    class="absolute inset-0 rounded transition-colors"
+                    :class="getGanttBarClass(phase.status)"
+                    :style="getGanttBarStyle(phase, monthIndex)"
+                  ></div>
+                </div>
               </div>
             </div>
           </div>
@@ -164,9 +179,12 @@ const monthHeaders = computed(() => {
   
   const months = []
   const current = new Date(minDate.getFullYear(), minDate.getMonth(), 1)
+  const monthNames = ['sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru']
   
   while (current <= maxDate && months.length < 12) {
-    months.push(current.toLocaleDateString('pl-PL', { month: 'short', year: '2-digit' }))
+    const monthName = monthNames[current.getMonth()]
+    const year = current.getFullYear().toString().slice(-2)
+    months.push(`${monthName} ${year}`)
     current.setMonth(current.getMonth() + 1)
   }
   
