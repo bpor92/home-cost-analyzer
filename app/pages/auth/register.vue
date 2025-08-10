@@ -102,10 +102,13 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'
 
-const router = useRouter()
+// Use auth layout (no sidebar)
+definePageMeta({
+  layout: 'auth'
+})
+
 const authStore = useAuthStore()
 
 const email = ref('')
@@ -128,13 +131,13 @@ const handleSubmit = async () => {
 
   try {
     const { error: authError } = await authStore.signUp(email.value, password.value)
-    
+
     if (authError) {
       error.value = authError.message
     } else {
       success.value = 'Konto zostało utworzone! Sprawdź email w celu aktywacji.'
       setTimeout(() => {
-        router.push('/login')
+        navigateTo('/auth/login')
       }, 3000)
     }
   } catch (e) {

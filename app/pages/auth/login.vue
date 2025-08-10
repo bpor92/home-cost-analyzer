@@ -81,6 +81,11 @@
 import { ref } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 
+// Use auth layout (no sidebar)
+definePageMeta({
+  layout: 'auth'
+})
+
 const authStore = useAuthStore()
 
 const email = ref('')

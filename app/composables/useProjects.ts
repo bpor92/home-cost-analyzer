@@ -10,20 +10,30 @@ export const useProjects = () => {
   const error = ref<string | null>(null)
 
   const fetchProjects = async () => {
-    if (!authStore.user) return
+    console.log('useProjects: fetchProjects called')
+    console.log('useProjects: authStore.user:', authStore.user)
+    
+    if (!authStore.user) {
+      console.log('useProjects: No user found, returning early')
+      return
+    }
     
     loading.value = true
     error.value = null
     
     try {
+      console.log('useProjects: Making Supabase query for user:', authStore.user.id)
       const { data, error: supabaseError } = await supabase
         .from('projects')
         .select('*')
         .eq('user_id', authStore.user.id)
         .order('created_at', { ascending: false })
 
+      console.log('useProjects: Supabase response:', { data, supabaseError })
+
       if (supabaseError) throw supabaseError
       projects.value = data || []
+      console.log('useProjects: Projects set to:', projects.value)
     } catch (err: any) {
       error.value = err.message || 'Failed to fetch projects'
       console.error('Error fetching projects:', err)

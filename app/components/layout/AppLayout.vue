@@ -30,7 +30,7 @@
       <div class="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
         <div class="flex items-center h-16 flex-shrink-0 px-4 bg-white border-b border-gray-200">
           <div class="flex items-center">
-            <div class="h-8 w-8 bg-primary-500 rounded-lg flex items-center justify-center">
+            <div class="h-8 w-8 bg-blue-500 rounded-lg flex items-center justify-center">
               <Home class="h-5 w-5 text-white" />
             </div>
             <span class="ml-2 text-xl font-semibold text-gray-900">
@@ -49,7 +49,7 @@
       <main class="flex-1 relative overflow-y-auto focus:outline-none">
         <div class="py-6">
           <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8">
-            <router-view />
+            <NuxtPage />
           </div>
         </div>
       </main>

@@ -6,14 +6,14 @@
     </div>
     
     <nav class="flex-1 px-2 py-4 space-y-1">
-      <router-link
+      <NuxtLink
         v-for="item in menuItems"
         :key="item.name"
         :to="item.path"
         :class="[
           'group flex items-center px-2 py-2 text-sm font-medium rounded-md transition-colors',
           $route.path === item.path
-            ? 'bg-primary-100 text-primary-900'
+            ? 'bg-blue-100 text-blue-900'
             : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
         ]"
       >
@@ -22,7 +22,7 @@
           :class="[
             'mr-3 h-5 w-5',
             $route.path === item.path
-              ? 'text-primary-500'
+              ? 'text-blue-500'
               : 'text-gray-400 group-hover:text-gray-600'
           ]"
         />
@@ -33,7 +33,7 @@
         >
           {{ item.badge }}
         </span>
-      </router-link>
+      </NuxtLink>
     </nav>
 
     <div class="px-2 py-4 border-t border-gray-200">
@@ -47,7 +47,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+// Nuxt auto-imports useRoute
 import {
   Home,
   Wallet,

@@ -66,8 +66,8 @@
       </Card>
     </div>
 
-    <div class="flex flex-col md:flex-row gap-4 mb-6">
-      <div class="flex-1">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 mb-6">
+      <div class="md:col-span-6">
         <Input
           v-model="searchTerm"
           placeholder="Szukaj etapów..."
@@ -79,25 +79,29 @@
         </Input>
       </div>
       
-      <select
-        v-model="statusFilter"
-        class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-      >
-        <option value="">Wszystkie statusy</option>
-        <option value="planned">Planowane</option>
-        <option value="in-progress">W trakcie</option>
-        <option value="completed">Zakończone</option>
-      </select>
+      <div class="md:col-span-3">
+        <select
+          v-model="statusFilter"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+        >
+          <option value="">Wszystkie statusy</option>
+          <option value="planned">Planowane</option>
+          <option value="in-progress">W trakcie</option>
+          <option value="completed">Zakończone</option>
+        </select>
+      </div>
       
-      <select
-        v-model="priorityFilter"
-        class="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-      >
-        <option value="">Wszystkie priorytety</option>
-        <option value="high">Wysoki</option>
-        <option value="medium">Średni</option>
-        <option value="low">Niski</option>
-      </select>
+      <div class="md:col-span-3">
+        <select
+          v-model="priorityFilter"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+        >
+          <option value="">Wszystkie priorytety</option>
+          <option value="high">Wysoki</option>
+          <option value="medium">Średni</option>
+          <option value="low">Niski</option>
+        </select>
+      </div>
     </div>
 
     <div v-if="loading" class="text-center py-8">

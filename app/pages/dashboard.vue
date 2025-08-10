@@ -89,12 +89,12 @@
           <template #header>
             <div class="flex items-center justify-between">
               <h3 class="text-lg font-medium text-gray-900">Ostatnie wydatki</h3>
-              <router-link
+              <NuxtLink
                 to="/expenses"
-                class="text-sm text-primary-600 hover:text-primary-500"
+                class="text-sm text-blue-600 hover:text-blue-500"
               >
                 Zobacz wszystkie
-              </router-link>
+              </NuxtLink>
             </div>
           </template>
           <div class="space-y-3">
@@ -129,12 +129,12 @@
           <template #header>
             <div class="flex items-center justify-between">
               <h3 class="text-lg font-medium text-gray-900">Nadchodzące etapy</h3>
-              <router-link
+              <NuxtLink
                 to="/planning"
-                class="text-sm text-primary-600 hover:text-primary-500"
+                class="text-sm text-blue-600 hover:text-blue-500"
               >
                 Zobacz wszystkie
-              </router-link>
+              </NuxtLink>
             </div>
           </template>
           <div class="text-center py-6 text-gray-600">
@@ -206,7 +206,7 @@ import Input from '~/components/ui/Input.vue'
 import type { Project } from '~/types'
 
 const projectsStore = useProjectsStore()
-const { createProject: createProjectApi } = useProjects()
+const { projects, fetchProjects, createProject: createProjectApi } = useProjects()
 
 const showProjectModal = ref(false)
 const newProject = ref({
@@ -292,7 +292,37 @@ const formatDate = (date: string) => {
 }
 
 
-onMounted(() => {
+onMounted(async () => {
+  console.log('Dashboard onMounted - starting...')
+  
+  // Initialize auth first if not already done
+  const authStore = useAuthStore()
+  if (!authStore.user && authStore.loading) {
+    console.log('Auth not initialized, waiting...')
+    await authStore.initialize()
+  }
+  console.log('Auth user after init:', authStore.user)
+  
+  // Load current project from localStorage
   projectsStore.loadCurrentProject()
+  console.log('Current project from localStorage:', projectsStore.currentProject)
+  
+  // If user is authenticated, fetch all projects from database
+  if (authStore.user) {
+    console.log('Fetching projects from database...')
+    await fetchProjects()
+    console.log('Projects fetched:', projects.value)
+    
+    // If no current project but user has projects, set the first one as current
+    if (!projectsStore.hasCurrentProject && projects.value.length > 0) {
+      console.log('Setting first project as current:', projects.value[0])
+      projectsStore.setCurrentProject(projects.value[0])
+    }
+  } else {
+    console.log('No user found, redirecting to login...')
+    await navigateTo('/auth/login')
+  }
+  
+  console.log('Dashboard initialization complete')
 })
 </script>
