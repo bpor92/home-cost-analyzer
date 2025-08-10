@@ -25,6 +25,14 @@
             <Tag class="h-4 w-4" />
             <span>Kategoria: {{ phase.budget_categories.name }}</span>
           </div>
+
+          <div v-if="props.phaseExpenseTotal > 0" class="flex items-center gap-2">
+            <Receipt class="h-4 w-4" />
+            <span>Wydano: {{ formatCurrency(props.phaseExpenseTotal) }}</span>
+            <span v-if="phase.budget" class="text-xs text-gray-500">
+              ({{ ((props.phaseExpenseTotal / phase.budget) * 100).toFixed(1) }}% budżetu)
+            </span>
+          </div>
           
           <div v-if="phase.notes" class="flex items-start gap-2">
             <FileText class="h-4 w-4 mt-0.5 flex-shrink-0" />
@@ -34,6 +42,14 @@
       </div>
       
       <div class="flex items-center gap-2 ml-4">
+        <Button
+          size="sm"
+          variant="ghost"
+          title="Dodaj wydatek do tego etapu"
+          @click="$emit('add-expense', phase)"
+        >
+          <Plus class="h-4 w-4" />
+        </Button>
         <Button
           size="sm"
           variant="ghost"
@@ -76,7 +92,7 @@
 
 <script setup lang="ts">
 import { computed, defineComponent, type PropType, h } from 'vue'
-import { Calendar, CreditCard, FileText, Edit2, Trash2, GripVertical, Tag } from 'lucide-vue-next'
+import { Calendar, CreditCard, FileText, Edit2, Trash2, GripVertical, Tag, Plus, Receipt } from 'lucide-vue-next'
 import Card from '~/components/ui/Card.vue'
 import Button from '~/components/ui/Button.vue'
 import type { RenovationPhase } from '~/types/database'
@@ -164,15 +180,18 @@ const PriorityBadge = defineComponent({
 interface Props {
   phase: RenovationPhase
   showDragHandle?: boolean
+  phaseExpenseTotal?: number
 }
 
 interface Emits {
   (e: 'edit', phase: RenovationPhase): void
   (e: 'delete', phase: RenovationPhase): void
+  (e: 'add-expense', phase: RenovationPhase): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  showDragHandle: false
+  showDragHandle: false,
+  phaseExpenseTotal: 0
 })
 
 const emit = defineEmits<Emits>()

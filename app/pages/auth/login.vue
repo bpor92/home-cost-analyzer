@@ -12,41 +12,23 @@
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
       <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
         <form @submit.prevent="handleSubmit" class="space-y-6">
-          <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <div class="mt-1">
-              <input
-                id="email"
-                v-model="email"
-                name="email"
-                type="email"
-                autocomplete="email"
-                required
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                placeholder="twoj@email.com"
-              />
-            </div>
-          </div>
+          <UiInput
+            v-model="email"
+            type="email"
+            label="Email"
+            placeholder="twoj@email.com"
+            required
+            autocomplete="email"
+          />
 
-          <div>
-            <label for="password" class="block text-sm font-medium text-gray-700">
-              Hasło
-            </label>
-            <div class="mt-1">
-              <input
-                id="password"
-                v-model="password"
-                name="password"
-                type="password"
-                autocomplete="current-password"
-                required
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                placeholder="Hasło"
-              />
-            </div>
-          </div>
+          <UiInput
+            v-model="password"
+            type="password"
+            label="Hasło"
+            placeholder="Hasło"
+            required
+            autocomplete="current-password"
+          />
 
           <div v-if="error" class="text-red-600 text-sm">
             {{ error }}

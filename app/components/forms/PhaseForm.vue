@@ -62,7 +62,7 @@
         <select
           id="priority"
           v-model="formData.priority"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 bg-white transition-all duration-200"
         >
           <option value="low">Niski</option>
           <option value="medium">Średni</option>
@@ -79,7 +79,7 @@
         <select
           id="status"
           v-model="formData.status"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 bg-white transition-all duration-200"
         >
           <option value="planned">Planowany</option>
           <option value="in-progress">W trakcie</option>
@@ -113,7 +113,7 @@
         <select
           id="group"
           v-model="formData.group_id"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 bg-white transition-all duration-200"
         >
           <option value="">Brak grupy</option>
           <option
@@ -135,7 +135,7 @@
         <select
           id="category"
           v-model="formData.category_id"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 bg-white"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 bg-white transition-all duration-200"
         >
           <option value="">Brak kategorii</option>
           <option
@@ -159,7 +159,7 @@
         v-model="formData.notes"
         rows="3"
         placeholder="Dodatkowe informacje o etapie..."
-        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none transition-all duration-200"
       ></textarea>
     </div>
 
@@ -262,7 +262,7 @@ watch(() => props.phase, (newPhase) => {
   }
 }, { immediate: true })
 
-function validateForm(): boolean {
+const validatePhaseForm = (): boolean => {
   errors.value = {}
   
   if (!formData.name.trim()) {
@@ -283,7 +283,7 @@ function validateForm(): boolean {
 }
 
 function handleSubmit() {
-  if (validateForm()) {
+  if (validatePhaseForm()) {
     emit('submit', { ...formData })
   }
 }

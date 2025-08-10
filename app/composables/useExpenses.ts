@@ -19,7 +19,8 @@ export const useExpenses = (projectId: Ref<string | null>) => {
         .from('expenses')
         .select(`
           *,
-          budget_categories(name)
+          budget_categories(name),
+          renovation_phases(name)
         `)
         .eq('project_id', projectId.value)
         .order('expense_date', { ascending: false })
@@ -46,7 +47,8 @@ export const useExpenses = (projectId: Ref<string | null>) => {
         })
         .select(`
           *,
-          budget_categories(name)
+          budget_categories(name),
+          renovation_phases(name)
         `)
         .single()
 
@@ -69,7 +71,8 @@ export const useExpenses = (projectId: Ref<string | null>) => {
         .eq('id', id)
         .select(`
           *,
-          budget_categories(name)
+          budget_categories(name),
+          renovation_phases(name)
         `)
         .single()
 
@@ -169,6 +172,18 @@ export const useExpenses = (projectId: Ref<string | null>) => {
     }
   }, { immediate: true })
 
+  const getExpensesForPhase = (phaseId: string) => {
+    return computed(() => expenses.value.filter(expense => expense.phase_id === phaseId))
+  }
+
+  const getPhaseExpenseTotal = (phaseId: string) => {
+    return computed(() => {
+      return expenses.value
+        .filter(expense => expense.phase_id === phaseId)
+        .reduce((sum, expense) => sum + expense.amount, 0)
+    })
+  }
+
   return {
     expenses: readonly(expenses),
     loading: readonly(loading),
@@ -179,6 +194,8 @@ export const useExpenses = (projectId: Ref<string | null>) => {
     addExpense,
     updateExpense,
     deleteExpense,
-    filterExpenses
+    filterExpenses,
+    getExpensesForPhase,
+    getPhaseExpenseTotal
   }
 }

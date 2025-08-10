@@ -12,7 +12,7 @@
           <h1 class="ml-2 text-xl font-semibold text-gray-900">
             {{ title }}
           </h1>
-          
+
           <!-- Project Selector -->
           <div class="hidden md:block w-64">
             <ProjectSelector />
@@ -110,6 +110,6 @@ const userInitial = computed(() => {
 
 const handleSignOut = async () => {
   await authStore.signOut()
-  router.push('/login')
+  router.push('/auth/login')
 }
 </script>

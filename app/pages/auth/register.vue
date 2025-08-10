@@ -12,60 +12,32 @@
     <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
       <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
         <form @submit.prevent="handleSubmit" class="space-y-6">
-          <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <div class="mt-1">
-              <input
-                id="email"
-                v-model="email"
-                name="email"
-                type="email"
-                autocomplete="email"
-                required
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                placeholder="twoj@email.com"
-              />
-            </div>
-          </div>
+          <UiInput
+            v-model="email"
+            type="email"
+            label="Email"
+            placeholder="twoj@email.com"
+            required
+            autocomplete="email"
+          />
 
-          <div>
-            <label for="password" class="block text-sm font-medium text-gray-700">
-              Hasło
-            </label>
-            <div class="mt-1">
-              <input
-                id="password"
-                v-model="password"
-                name="password"
-                type="password"
-                autocomplete="new-password"
-                required
-                minlength="6"
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                placeholder="Minimum 6 znaków"
-              />
-            </div>
-          </div>
+          <UiInput
+            v-model="password"
+            type="password"
+            label="Hasło"
+            placeholder="Minimum 6 znaków"
+            required
+            autocomplete="new-password"
+          />
 
-          <div>
-            <label for="confirmPassword" class="block text-sm font-medium text-gray-700">
-              Potwierdź hasło
-            </label>
-            <div class="mt-1">
-              <input
-                id="confirmPassword"
-                v-model="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                autocomplete="new-password"
-                required
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
-                placeholder="Powtórz hasło"
-              />
-            </div>
-          </div>
+          <UiInput
+            v-model="confirmPassword"
+            type="password"
+            label="Potwierdź hasło"
+            placeholder="Powtórz hasło"
+            required
+            autocomplete="new-password"
+          />
 
           <div v-if="error" class="text-red-600 text-sm">
             {{ error }}
@@ -88,7 +60,7 @@
 
           <div class="text-center">
             <router-link
-              to="/login"
+              to="/auth/login"
               class="text-primary-600 hover:text-primary-500 text-sm"
             >
               Masz już konto? Zaloguj się

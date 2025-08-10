@@ -31,6 +31,7 @@ export interface Expense {
   id: string
   project_id: string
   category_id: string | null
+  phase_id: string | null
   name: string
   amount: number
   description: string | null
@@ -84,6 +85,9 @@ export interface CategoryWithSpent extends BudgetCategory {
 
 export interface ExpenseWithCategory extends Expense {
   budget_categories?: {
+    name: string
+  }
+  renovation_phases?: {
     name: string
   }
 }

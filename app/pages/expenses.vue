@@ -111,7 +111,7 @@
                 Wydatek
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
-                Kategoria
+                Kategoria / Etap
               </th>
               <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Kwota
@@ -141,9 +141,14 @@
                 </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
-                  {{ expense.budget_categories?.name || 'Bez kategorii' }}
-                </span>
+                <div class="space-y-1">
+                  <span class="px-2 py-1 text-xs rounded-full bg-gray-100 text-gray-800">
+                    {{ expense.budget_categories?.name || 'Bez kategorii' }}
+                  </span>
+                  <div v-if="expense.renovation_phases?.name" class="text-xs text-blue-600">
+                    Etap: {{ expense.renovation_phases.name }}
+                  </div>
+                </div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 {{ formatCurrency(expense.amount) }}
@@ -257,11 +262,32 @@
           
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">
+              Etap (opcjonalnie)
+            </label>
+            <select
+              v-model="expenseForm.phase_id"
+              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm text-gray-900 bg-white"
+              @change="onPhaseChange"
+            >
+              <option value="">Bez etapu</option>
+              <option
+                v-for="phase in phases"
+                :key="phase.id"
+                :value="phase.id"
+              >
+                {{ phase.name }}
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
               Kategoria
             </label>
             <select
               v-model="expenseForm.category_id"
               class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm text-gray-900 bg-white"
+              :disabled="!!expenseForm.phase_id && !!selectedPhaseCategory"
             >
               <option value="">Bez kategorii</option>
               <option
@@ -272,6 +298,9 @@
                 {{ category.name }}
               </option>
             </select>
+            <p v-if="expenseForm.phase_id && selectedPhaseCategory" class="text-xs text-blue-600 mt-1">
+              Automatycznie ustawiono kategorię z etapu: {{ selectedPhaseCategory.name }}
+            </p>
           </div>
 
           <Input
@@ -335,6 +364,7 @@ import {
 import { useProjectsStore } from '~/stores/projects'
 import { useExpenses } from '~/composables/useExpenses'
 import { useBudget } from '~/composables/useBudget'
+import { useRenovationPhases } from '~/composables/useRenovationPhases'
 import Button from '~/components/ui/Button.vue'
 import Card from '~/components/ui/Card.vue'
 import Input from '~/components/ui/Input.vue'
@@ -351,6 +381,7 @@ const {
 } = useExpenses(currentProjectId)
 
 const { categories } = useBudget(currentProjectId)
+const { phases, fetchPhases } = useRenovationPhases()
 
 // Modal states
 const showAddExpenseModal = ref(false)
@@ -360,6 +391,7 @@ const editingExpense = ref<ExpenseWithCategory | null>(null)
 const expenseForm = ref({
   name: '',
   category_id: '',
+  phase_id: '',
   amount: '',
   expense_date: '',
   description: ''
@@ -430,6 +462,16 @@ const averageExpense = computed(() => {
     : 0
 })
 
+const selectedPhase = computed(() => {
+  if (!expenseForm.value.phase_id) return null
+  return phases.value.find(phase => phase.id === expenseForm.value.phase_id)
+})
+
+const selectedPhaseCategory = computed(() => {
+  if (!selectedPhase.value?.category_id) return null
+  return categories.value.find(category => category.id === selectedPhase.value.category_id)
+})
+
 const canSaveExpense = computed(() => {
   return expenseForm.value.name && 
          expenseForm.value.amount && 
@@ -456,9 +498,17 @@ const editExpense = (expense: ExpenseWithCategory) => {
   expenseForm.value = {
     name: expense.name,
     category_id: expense.category_id || '',
+    phase_id: expense.phase_id || '',
     amount: expense.amount.toString(),
     expense_date: expense.expense_date,
     description: expense.description || ''
+  }
+}
+
+const onPhaseChange = () => {
+  // Auto-set category when phase is selected
+  if (selectedPhaseCategory.value) {
+    expenseForm.value.category_id = selectedPhaseCategory.value.id
   }
 }
 
@@ -468,6 +518,7 @@ const closeExpenseModal = () => {
   expenseForm.value = {
     name: '',
     category_id: '',
+    phase_id: '',
     amount: '',
     expense_date: '',
     description: ''
@@ -494,6 +545,7 @@ const saveExpense = async () => {
     project_id: currentProjectId.value,
     name: expenseForm.value.name,
     category_id: expenseForm.value.category_id || null,
+    phase_id: expenseForm.value.phase_id || null,
     amount: parseFloat(expenseForm.value.amount),
     expense_date: expenseForm.value.expense_date,
     description: expenseForm.value.description || null,
@@ -550,6 +602,13 @@ watch(showAddExpenseModal, (show) => {
   }
 })
 
-// Load current project on mount
+// Load data on mount
 projectsStore.loadCurrentProject()
+
+// Load phases when project changes
+watch(() => projectsStore.currentProject, () => {
+  if (projectsStore.currentProject) {
+    fetchPhases(projectsStore.currentProject.id)
+  }
+}, { immediate: true })
 </script>

@@ -146,6 +146,14 @@
             <Button
               size="sm"
               variant="ghost"
+              title="Dodaj wydatek do tego etapu"
+              @click="$emit('addExpenseToPhase', phase)"
+            >
+              <Plus class="h-3 w-3" />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
               @click="$emit('editPhase', phase)"
             >
               <Edit2 class="h-3 w-3" />
@@ -233,6 +241,7 @@ interface Emits {
   (e: 'addPhase', group: PhaseGroupWithPhases): void
   (e: 'editPhase', phase: RenovationPhase): void
   (e: 'deletePhase', phase: RenovationPhase): void
+  (e: 'addExpenseToPhase', phase: RenovationPhase): void
 }
 
 const props = withDefaults(defineProps<Props>(), {

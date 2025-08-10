@@ -25,6 +25,7 @@
         :class="dragMode ? 'draggable-item cursor-move' : ''"
         @edit="$emit('edit', phase)"
         @delete="$emit('delete', phase)"
+        @add-expense="$emit('add-expense', phase)"
       />
     </div>
     
@@ -54,6 +55,7 @@ interface Props {
 interface Emits {
   (e: 'edit', phase: RenovationPhase): void
   (e: 'delete', phase: RenovationPhase): void
+  (e: 'add-expense', phase: RenovationPhase): void
   (e: 'reorder', phases: RenovationPhase[]): void
 }
 

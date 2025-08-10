@@ -50,13 +50,12 @@ import { computed } from 'vue'
 // Nuxt auto-imports useRoute
 import {
   Home,
-  Wallet,
   Receipt,
-  Calendar,
   BarChart3,
   Settings,
   HelpCircle,
-  FolderOpen
+  FolderOpen,
+  LayoutDashboard
 } from 'lucide-vue-next'
 import type { MenuItem } from '~/types'
 import ProjectSelector from '~/components/ui/ProjectSelector.vue'
@@ -75,19 +74,14 @@ const menuItems = computed<MenuItem[]>(() => [
     icon: 'FolderOpen'
   },
   {
-    name: 'Budżet',
-    path: '/budget',
-    icon: 'Wallet'
+    name: 'Zarządzanie',
+    path: '/project-management',
+    icon: 'LayoutDashboard'
   },
   {
     name: 'Wydatki',
     path: '/expenses',
     icon: 'Receipt'
-  },
-  {
-    name: 'Planowanie',
-    path: '/planning',
-    icon: 'Calendar'
   },
   {
     name: 'Raporty',
@@ -105,9 +99,8 @@ const getIcon = (iconName: string) => {
   const icons = {
     Home,
     FolderOpen,
-    Wallet,
+    LayoutDashboard,
     Receipt,
-    Calendar,
     BarChart3,
     Settings,
     HelpCircle

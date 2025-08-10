@@ -22,7 +22,7 @@
         v-model="formData.description"
         rows="3"
         placeholder="Krótki opis tego co zawiera grupa etapów..."
-        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 resize-none transition-all duration-200"
       ></textarea>
     </div>
 
@@ -149,7 +149,7 @@ watch(() => props.group, (newGroup) => {
   }
 }, { immediate: true })
 
-function validateForm(): boolean {
+const validatePhaseGroupForm = (): boolean => {
   errors.value = {}
   
   if (!formData.name.trim()) {
@@ -165,7 +165,7 @@ function validateForm(): boolean {
 }
 
 function handleSubmit() {
-  if (validateForm()) {
+  if (validatePhaseGroupForm()) {
     emit('submit', { ...formData })
   }
 }
