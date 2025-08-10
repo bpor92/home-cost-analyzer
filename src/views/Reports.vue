@@ -6,7 +6,7 @@
       <div class="text-center py-12">
         <BarChart3 class="mx-auto h-12 w-12 text-gray-400" />
         <h3 class="mt-2 text-sm font-medium text-gray-900">Funkcja w budowie</h3>
-        <p class="mt-1 text-sm text-gray-500">Raporty i wykresy będą dostępne wkrótce</p>
+        <p class="mt-1 text-sm text-gray-600">Raporty i wykresy będą dostępne wkrótce</p>
       </div>
     </Card>
   </div>

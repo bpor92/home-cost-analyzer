@@ -9,7 +9,7 @@
       leave-to-class="opacity-0"
     >
       <div
-        v-if="show"
+        v-if="isOpen"
         class="fixed inset-0 z-50 overflow-y-auto"
         @click="handleBackdropClick"
       >
@@ -27,7 +27,7 @@
             leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
             <div
-              v-if="show"
+              v-if="isOpen"
               class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
               @click.stop
             >
@@ -53,23 +53,32 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 interface Props {
-  show: boolean
+  open?: boolean
+  show?: boolean
   title?: string
   closeOnBackdrop?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  closeOnBackdrop: true
+  closeOnBackdrop: true,
+  open: false,
+  show: false
 })
 
 const emit = defineEmits<{
   close: []
+  'update:open': [value: boolean]
 }>()
+
+const isOpen = computed(() => props.open ?? props.show)
 
 const handleBackdropClick = () => {
   if (props.closeOnBackdrop) {
     emit('close')
+    emit('update:open', false)
   }
 }
 </script>

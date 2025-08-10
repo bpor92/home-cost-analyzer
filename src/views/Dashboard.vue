@@ -15,7 +15,7 @@
     <div v-if="!hasCurrentProject" class="text-center py-12">
       <Home class="mx-auto h-12 w-12 text-gray-400" />
       <h3 class="mt-2 text-sm font-medium text-gray-900">Brak aktywnego projektu</h3>
-      <p class="mt-1 text-sm text-gray-500">Rozpocznij od utworzenia nowego projektu remontu</p>
+      <p class="mt-1 text-sm text-gray-600">Rozpocznij od utworzenia nowego projektu remontu</p>
       <div class="mt-6">
         <Button @click="showProjectModal = true">
           <Plus class="mr-2 h-4 w-4" />
@@ -36,7 +36,7 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-500 truncate">
+                  <dt class="text-sm font-medium text-gray-600 truncate">
                     {{ stat.name }}
                   </dt>
                   <dd class="text-lg font-medium text-gray-900">
@@ -51,7 +51,7 @@
               <span :class="`text-${stat.color}-700 font-medium`">
                 {{ stat.change }}
               </span>
-              <span class="text-gray-500"> {{ stat.changeText }}</span>
+              <span class="text-gray-600"> {{ stat.changeText }}</span>
             </div>
           </div>
         </Card>
@@ -62,9 +62,9 @@
         <!-- Budget Overview Chart -->
         <Card>
           <template #header>
-            <h3 class="text-lg font-medium">Podział budżetu</h3>
+            <h3 class="text-lg font-medium text-gray-900">Podział budżetu</h3>
           </template>
-          <div class="h-64 flex items-center justify-center text-gray-500">
+          <div class="h-64 flex items-center justify-center text-gray-600">
             <PieChart class="h-8 w-8 mr-2" />
             Wykres będzie tutaj
           </div>
@@ -73,9 +73,9 @@
         <!-- Expenses Timeline -->
         <Card>
           <template #header>
-            <h3 class="text-lg font-medium">Wydatki w czasie</h3>
+            <h3 class="text-lg font-medium text-gray-900">Wydatki w czasie</h3>
           </template>
-          <div class="h-64 flex items-center justify-center text-gray-500">
+          <div class="h-64 flex items-center justify-center text-gray-600">
             <TrendingUp class="h-8 w-8 mr-2" />
             Wykres będzie tutaj
           </div>
@@ -88,7 +88,7 @@
         <Card>
           <template #header>
             <div class="flex items-center justify-between">
-              <h3 class="text-lg font-medium">Ostatnie wydatki</h3>
+              <h3 class="text-lg font-medium text-gray-900">Ostatnie wydatki</h3>
               <router-link
                 to="/expenses"
                 class="text-sm text-primary-600 hover:text-primary-500"
@@ -109,7 +109,7 @@
                 </div>
                 <div class="ml-3">
                   <p class="text-sm font-medium text-gray-900">{{ expense.name }}</p>
-                  <p class="text-xs text-gray-500">
+                  <p class="text-xs text-gray-600">
                     {{ formatDate(expense.expense_date) }}
                   </p>
                 </div>
@@ -118,7 +118,7 @@
                 {{ formatCurrency(expense.amount) }}
               </span>
             </div>
-            <div v-if="recentExpenses.length === 0" class="text-center py-6 text-gray-500">
+            <div v-if="recentExpenses.length === 0" class="text-center py-6 text-gray-600">
               Brak wydatków do wyświetlenia
             </div>
           </div>
@@ -128,7 +128,7 @@
         <Card>
           <template #header>
             <div class="flex items-center justify-between">
-              <h3 class="text-lg font-medium">Nadchodzące etapy</h3>
+              <h3 class="text-lg font-medium text-gray-900">Nadchodzące etapy</h3>
               <router-link
                 to="/planning"
                 class="text-sm text-primary-600 hover:text-primary-500"
@@ -137,35 +137,9 @@
               </router-link>
             </div>
           </template>
-          <div class="space-y-3">
-            <div
-              v-for="phase in upcomingPhases"
-              :key="phase.id"
-              class="flex items-center justify-between py-2"
-            >
-              <div class="flex items-center">
-                <div class="h-8 w-8 bg-blue-100 rounded-full flex items-center justify-center">
-                  <Calendar class="h-4 w-4 text-blue-600" />
-                </div>
-                <div class="ml-3">
-                  <p class="text-sm font-medium text-gray-900">{{ phase.name }}</p>
-                  <p class="text-xs text-gray-500">
-                    {{ phase.start_date ? formatDate(phase.start_date) : 'Brak daty' }}
-                  </p>
-                </div>
-              </div>
-              <span
-                :class="[
-                  'px-2 py-1 text-xs rounded-full',
-                  getPhaseStatusClass(phase.status)
-                ]"
-              >
-                {{ getPhaseStatusText(phase.status) }}
-              </span>
-            </div>
-            <div v-if="upcomingPhases.length === 0" class="text-center py-6 text-gray-500">
-              Brak zaplanowanych etapów
-            </div>
+          <div class="text-center py-6 text-gray-600">
+            <Calendar class="mx-auto h-8 w-8 mb-2" />
+            Funkcja planowania etapów będzie dostępna wkrótce
           </div>
         </Card>
       </div>
@@ -249,31 +223,30 @@ const { expenses } = useExpenses(currentProjectId)
 const { budgetSummary } = useBudget(currentProjectId)
 
 const recentExpenses = computed(() => expenses.value.slice(0, 5))
-const upcomingPhases = computed(() => []) // Will be implemented later
 
 const quickStats = computed(() => [
   {
     name: 'Całkowity budżet',
-    value: formatCurrency(budgetSummary.value.totalBudget),
+    value: formatCurrency(projectsStore.currentProject?.total_budget || 0),
     icon: Target,
     color: 'blue',
     change: '100%',
-    changeText: 'planowanego budżetu'
+    changeText: 'całkowitego budżetu'
   },
   {
     name: 'Wykorzystano',
     value: formatCurrency(budgetSummary.value.totalSpent),
     icon: DollarSign,
     color: 'green',
-    change: `${budgetSummary.value.spentPercentage.toFixed(1)}%`,
+    change: `${((projectsStore.currentProject?.total_budget || 0) > 0 ? (budgetSummary.value.totalSpent / projectsStore.currentProject.total_budget * 100) : 0).toFixed(1)}%`,
     changeText: 'budżetu'
   },
   {
     name: 'Pozostało',
-    value: formatCurrency(budgetSummary.value.remainingBudget),
+    value: formatCurrency((projectsStore.currentProject?.total_budget || 0) - budgetSummary.value.totalSpent),
     icon: Wallet,
     color: 'purple',
-    change: `${(100 - budgetSummary.value.spentPercentage).toFixed(1)}%`,
+    change: `${((projectsStore.currentProject?.total_budget || 0) > 0 ? (((projectsStore.currentProject.total_budget - budgetSummary.value.totalSpent) / projectsStore.currentProject.total_budget) * 100) : 0).toFixed(1)}%`,
     changeText: 'do wykorzystania'
   },
   {
@@ -318,23 +291,6 @@ const formatDate = (date: string) => {
   })
 }
 
-const getPhaseStatusClass = (status: string) => {
-  const classes = {
-    'planned': 'bg-gray-100 text-gray-800',
-    'in-progress': 'bg-blue-100 text-blue-800',
-    'completed': 'bg-green-100 text-green-800'
-  }
-  return classes[status as keyof typeof classes] || classes.planned
-}
-
-const getPhaseStatusText = (status: string) => {
-  const texts = {
-    'planned': 'Planowany',
-    'in-progress': 'W trakcie',
-    'completed': 'Zakończony'
-  }
-  return texts[status as keyof typeof texts] || 'Planowany'
-}
 
 onMounted(() => {
   projectsStore.loadCurrentProject()

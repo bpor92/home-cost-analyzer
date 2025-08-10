@@ -2,7 +2,7 @@
   <header class="bg-white shadow-sm border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
-        <div class="flex items-center">
+        <div class="flex items-center space-x-4">
           <button
             @click="$emit('toggleSidebar')"
             class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
@@ -12,6 +12,11 @@
           <h1 class="ml-2 text-xl font-semibold text-gray-900">
             {{ title }}
           </h1>
+          
+          <!-- Project Selector -->
+          <div class="hidden md:block w-64">
+            <ProjectSelector />
+          </div>
         </div>
 
         <div class="flex items-center space-x-4">
@@ -77,6 +82,7 @@ import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Menu, Bell, ChevronDown } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
+import ProjectSelector from '@/components/ui/ProjectSelector.vue'
 
 interface Props {
   title?: string

@@ -24,7 +24,7 @@
     <p v-if="error" class="mt-1 text-sm text-red-600">
       {{ error }}
     </p>
-    <p v-else-if="hint" class="mt-1 text-sm text-gray-500">
+    <p v-else-if="hint" class="mt-1 text-sm text-gray-600">
       {{ hint }}
     </p>
   </div>
@@ -62,7 +62,7 @@ const inputClasses = computed(() => {
   const baseClasses = 'block w-full rounded-md shadow-sm transition-colors sm:text-sm text-gray-900 placeholder-gray-400'
   const normalClasses = 'border-gray-300 focus:border-primary-500 focus:ring-primary-500'
   const errorClasses = 'border-red-300 focus:border-red-500 focus:ring-red-500'
-  const disabledClasses = 'bg-gray-50 text-gray-500 cursor-not-allowed'
+  const disabledClasses = 'bg-gray-50 text-gray-600 cursor-not-allowed'
   
   return [
     baseClasses,

@@ -4,7 +4,7 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
       <h1 class="text-2xl font-bold text-gray-900">Wydatki</h1>
       <div class="mt-4 sm:mt-0">
-        <Button @click="showAddExpenseModal = true">
+        <Button @click="openAddModal">
           <Plus class="mr-2 h-4 w-4" />
           Dodaj wydatek
         </Button>
@@ -64,7 +64,7 @@
             <DollarSign class="h-8 w-8 text-green-600" />
           </div>
           <div class="ml-5">
-            <div class="text-sm font-medium text-gray-500">Łączne wydatki</div>
+            <div class="text-sm font-medium text-gray-600">Łączne wydatki</div>
             <div class="text-2xl font-bold text-gray-900">
               {{ formatCurrency(totalExpenseAmount) }}
             </div>
@@ -78,7 +78,7 @@
             <Receipt class="h-8 w-8 text-blue-600" />
           </div>
           <div class="ml-5">
-            <div class="text-sm font-medium text-gray-500">Liczba wydatków</div>
+            <div class="text-sm font-medium text-gray-600">Liczba wydatków</div>
             <div class="text-2xl font-bold text-gray-900">
               {{ filteredExpenses.length }}
             </div>
@@ -92,7 +92,7 @@
             <TrendingUp class="h-8 w-8 text-purple-600" />
           </div>
           <div class="ml-5">
-            <div class="text-sm font-medium text-gray-500">Średni wydatek</div>
+            <div class="text-sm font-medium text-gray-600">Średni wydatek</div>
             <div class="text-2xl font-bold text-gray-900">
               {{ formatCurrency(averageExpense) }}
             </div>
@@ -107,16 +107,16 @@
         <table class="min-w-full divide-y divide-gray-300">
           <thead class="bg-gray-50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Wydatek
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Kategoria
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Kwota
               </th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">
                 Data
               </th>
               <th class="relative px-6 py-3">
@@ -135,7 +135,7 @@
                   <div class="text-sm font-medium text-gray-900">
                     {{ expense.name }}
                   </div>
-                  <div v-if="expense.description" class="text-sm text-gray-500">
+                  <div v-if="expense.description" class="text-sm text-gray-600">
                     {{ expense.description }}
                   </div>
                 </div>
@@ -148,7 +148,7 @@
               <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                 {{ formatCurrency(expense.amount) }}
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                 {{ formatDate(expense.expense_date) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -172,7 +172,7 @@
         <div v-if="filteredExpenses.length === 0" class="text-center py-12">
           <Receipt class="mx-auto h-12 w-12 text-gray-400" />
           <h3 class="mt-2 text-sm font-medium text-gray-900">Brak wydatków</h3>
-          <p class="mt-1 text-sm text-gray-500">Zacznij od dodania pierwszego wydatku</p>
+          <p class="mt-1 text-sm text-gray-600">Zacznij od dodania pierwszego wydatku</p>
         </div>
       </div>
 
@@ -240,83 +240,89 @@
       </div>
     </Card>
 
-    <!-- Add/Edit Expense Modal -->
-    <Modal
-      :show="showAddExpenseModal || !!editingExpense"
-      :title="editingExpense ? 'Edytuj wydatek' : 'Dodaj nowy wydatek'"
-      @close="closeExpenseModal"
-    >
-      <form @submit.prevent="saveExpense" class="space-y-4">
-        <Input
-          v-model="expenseForm.name"
-          label="Nazwa wydatku"
-          placeholder="np. Zakup płytek do łazienki"
-          required
-        />
+    <!-- Add Expense Modal -->
+    <div v-if="showAddExpenseModal || !!editingExpense" class="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center" @click="closeExpenseModal">
+      <div class="bg-white p-6 rounded-lg max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto" @click.stop>
+        <h2 class="text-xl font-bold mb-4">
+          {{ editingExpense ? 'Edytuj wydatek' : 'Dodaj nowy wydatek' }}
+        </h2>
         
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Kategoria
-          </label>
-          <select
-            v-model="expenseForm.category_id"
-            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-          >
-            <option value="">Bez kategorii</option>
-            <option
-              v-for="category in categories"
-              :key="category.id"
-              :value="category.id"
-            >
-              {{ category.name }}
-            </option>
-          </select>
-        </div>
-
-        <Input
-          v-model="expenseForm.amount"
-          type="number"
-          label="Kwota (PLN)"
-          placeholder="0.00"
-          min="0"
-          step="0.01"
-          required
-        />
-
-        <Input
-          v-model="expenseForm.expense_date"
-          type="date"
-          label="Data wydatku"
-          required
-        />
-
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">
-            Opis (opcjonalnie)
-          </label>
-          <textarea
-            v-model="expenseForm.description"
-            rows="3"
-            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-            placeholder="Dodatkowe informacje o wydatku..."
+        <form @submit.prevent="saveExpense" class="space-y-4">
+          <Input
+            v-model="expenseForm.name"
+            label="Nazwa wydatku"
+            placeholder="np. Zakup płytek do łazienki"
+            required
           />
-        </div>
-      </form>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Kategoria
+            </label>
+            <select
+              v-model="expenseForm.category_id"
+              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+            >
+              <option value="">Bez kategorii</option>
+              <option
+                v-for="category in categories"
+                :key="category.id"
+                :value="category.id"
+              >
+                {{ category.name }}
+              </option>
+            </select>
+          </div>
 
-      <template #footer>
-        <Button
-          type="button"
-          variant="outline"
-          @click="closeExpenseModal"
-          class="mr-3"
-        >
-          Anuluj
-        </Button>
-        <Button @click="saveExpense" :disabled="!canSaveExpense">
-          {{ editingExpense ? 'Zapisz' : 'Dodaj wydatek' }}
-        </Button>
-      </template>
-    </Modal>
+          <Input
+            v-model="expenseForm.amount"
+            type="number"
+            label="Kwota (PLN)"
+            placeholder="0.00"
+            min="0"
+            step="0.01"
+            required
+          />
+
+          <Input
+            v-model="expenseForm.expense_date"
+            type="date"
+            label="Data wydatku"
+            required
+          />
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Opis (opcjonalnie)
+            </label>
+            <textarea
+              v-model="expenseForm.description"
+              rows="3"
+              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+              placeholder="Dodatkowe informacje o wydatku..."
+            />
+          </div>
+        </form>
+
+        <div class="mt-6 flex justify-end space-x-3">
+          <Button
+            type="button"
+            variant="outline"
+            @click="closeExpenseModal"
+          >
+            Anuluj
+          </Button>
+          <Button type="button" @click="saveExpense" :disabled="!canSaveExpense">
+            {{ editingExpense ? 'Zapisz' : 'Dodaj wydatek' }}
+          </Button>
+        </div>
+        
+        <div class="text-xs text-gray-500 mt-2">
+          Debug: canSave={{ canSaveExpense }}, projectId={{ currentProjectId }},
+          name="{{ expenseForm.name }}", amount="{{ expenseForm.amount }}", date="{{ expenseForm.expense_date }}"
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -331,16 +337,14 @@ import { useExpenses } from '@/composables/useExpenses'
 import { useBudget } from '@/composables/useBudget'
 import Button from '@/components/ui/Button.vue'
 import Card from '@/components/ui/Card.vue'
-import Modal from '@/components/ui/Modal.vue'
 import Input from '@/components/ui/Input.vue'
-import type { ExpenseWithCategory, Expense } from '@/types'
+import type { ExpenseWithCategory } from '@/types'
 
 const projectsStore = useProjectsStore()
 const currentProjectId = computed(() => projectsStore.currentProject?.id || null)
 
 const { 
   expenses, 
-  loading, 
   addExpense, 
   updateExpense, 
   deleteExpense 
@@ -403,7 +407,7 @@ const visiblePages = computed(() => {
   const pages = []
   const maxVisible = 5
   let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2))
-  let end = Math.min(totalPages.value, start + maxVisible - 1)
+  const end = Math.min(totalPages.value, start + maxVisible - 1)
 
   if (end - start + 1 < maxVisible) {
     start = Math.max(1, end - maxVisible + 1)
@@ -433,6 +437,11 @@ const canSaveExpense = computed(() => {
 })
 
 // Methods
+const openAddModal = () => {
+  console.log('🔵 Opening add expense modal')
+  showAddExpenseModal.value = true
+}
+
 const clearFilters = () => {
   filters.value = {
     dateFrom: '',
@@ -466,7 +475,20 @@ const closeExpenseModal = () => {
 }
 
 const saveExpense = async () => {
-  if (!canSaveExpense.value || !currentProjectId.value) return
+  console.log('=== saveExpense function called ===')
+  console.log('canSaveExpense:', canSaveExpense.value)
+  console.log('currentProjectId:', currentProjectId.value)
+  console.log('expenseForm:', expenseForm.value)
+  
+  if (!canSaveExpense.value) {
+    console.log('❌ Cannot save - form validation failed')
+    return
+  }
+  
+  if (!currentProjectId.value) {
+    console.log('❌ Cannot save - no current project')
+    return
+  }
 
   const expenseData = {
     project_id: currentProjectId.value,
@@ -478,13 +500,21 @@ const saveExpense = async () => {
     receipt_photo_url: null
   }
 
-  if (editingExpense.value) {
-    await updateExpense(editingExpense.value.id, expenseData)
-  } else {
-    await addExpense(expenseData)
-  }
+  console.log('💾 Saving expense data:', expenseData)
 
-  closeExpenseModal()
+  try {
+    if (editingExpense.value) {
+      console.log('📝 Updating existing expense')
+      await updateExpense(editingExpense.value.id, expenseData)
+    } else {
+      console.log('➕ Adding new expense')
+      await addExpense(expenseData)
+    }
+    console.log('✅ Expense saved successfully')
+    closeExpenseModal()
+  } catch (error) {
+    console.error('❌ Error saving expense:', error)
+  }
 }
 
 const deleteExpenseItem = async (id: string) => {
@@ -519,4 +549,7 @@ watch(showAddExpenseModal, (show) => {
     expenseForm.value.expense_date = new Date().toISOString().split('T')[0]
   }
 })
+
+// Load current project on mount
+projectsStore.loadCurrentProject()
 </script>
