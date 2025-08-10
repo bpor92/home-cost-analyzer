@@ -39,9 +39,22 @@ export interface Expense {
   created_at: string
 }
 
+export interface PhaseGroup {
+  id: string
+  project_id: string
+  name: string
+  description: string | null
+  color: string
+  order_index: number
+  created_at: string
+  updated_at: string
+}
+
 export interface RenovationPhase {
   id: string
   project_id: string
+  group_id: string | null
+  category_id: string | null
   name: string
   budget: number | null
   start_date: string | null
@@ -70,6 +83,37 @@ export interface CategoryWithSpent extends BudgetCategory {
 }
 
 export interface ExpenseWithCategory extends Expense {
+  budget_categories?: {
+    name: string
+  }
+}
+
+export interface PhaseGroupWithPhases extends PhaseGroup {
+  phases: RenovationPhase[]
+  totalBudget: number
+  totalProgress: number
+  phaseCount: number
+  completedPhases: number
+}
+
+export interface PhaseWithGroup extends RenovationPhase {
+  phase_groups?: {
+    name: string
+    color: string
+  }
+}
+
+export interface PhaseWithCategory extends RenovationPhase {
+  budget_categories?: {
+    name: string
+  }
+}
+
+export interface PhaseWithGroupAndCategory extends RenovationPhase {
+  phase_groups?: {
+    name: string
+    color: string
+  }
   budget_categories?: {
     name: string
   }
