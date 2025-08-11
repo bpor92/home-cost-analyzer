@@ -238,7 +238,7 @@ const quickStats = computed(() => [
     value: formatCurrency(budgetSummary.value.totalSpent),
     icon: DollarSign,
     color: 'green',
-    change: `${((projectsStore.currentProject?.total_budget || 0) > 0 ? (budgetSummary.value.totalSpent / projectsStore.currentProject.total_budget * 100) : 0).toFixed(1)}%`,
+    change: `${((projectsStore.currentProject?.total_budget || 0) > 0 ? (budgetSummary.value.totalSpent / (projectsStore.currentProject?.total_budget || 1) * 100) : 0).toFixed(1)}%`,
     changeText: 'budżetu'
   },
   {
@@ -246,7 +246,7 @@ const quickStats = computed(() => [
     value: formatCurrency((projectsStore.currentProject?.total_budget || 0) - budgetSummary.value.totalSpent),
     icon: Wallet,
     color: 'purple',
-    change: `${((projectsStore.currentProject?.total_budget || 0) > 0 ? (((projectsStore.currentProject.total_budget - budgetSummary.value.totalSpent) / projectsStore.currentProject.total_budget) * 100) : 0).toFixed(1)}%`,
+    change: `${((projectsStore.currentProject?.total_budget || 0) > 0 ? ((((projectsStore.currentProject?.total_budget || 0) - budgetSummary.value.totalSpent) / (projectsStore.currentProject?.total_budget || 1)) * 100) : 0).toFixed(1)}%`,
     changeText: 'do wykorzystania'
   },
   {
@@ -315,8 +315,11 @@ onMounted(async () => {
     
     // If no current project but user has projects, set the first one as current
     if (!projectsStore.hasCurrentProject && projects.value.length > 0) {
-      console.log('Setting first project as current:', projects.value[0])
-      projectsStore.setCurrentProject(projects.value[0])
+      const firstProject = projects.value[0]
+      if (firstProject) {
+        console.log('Setting first project as current:', firstProject)
+        projectsStore.setCurrentProject(firstProject)
+      }
     }
   } else {
     console.log('No user found, redirecting to login...')

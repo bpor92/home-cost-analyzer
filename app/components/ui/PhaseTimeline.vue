@@ -299,12 +299,12 @@ function isPhaseInMonth(phase: RenovationPhase, monthIndex: number): boolean {
 }
 
 function getMonthStart(monthIndex: number): Date {
-  if (monthHeaders.value.length === 0) return new Date()
+  if (monthHeaders.value.length === 0 || !monthHeaders.value[monthIndex]) return new Date()
   
   const [monthStr, yearStr] = monthHeaders.value[monthIndex].split(' ')
   const monthNames = ['sty', 'lut', 'mar', 'kwi', 'maj', 'cze', 'lip', 'sie', 'wrz', 'paź', 'lis', 'gru']
-  const month = monthNames.indexOf(monthStr)
-  const year = 2000 + parseInt(yearStr)
+  const month = monthNames.indexOf(monthStr || 'sty')
+  const year = 2000 + parseInt(yearStr || '24')
   
   return new Date(year, month, 1)
 }

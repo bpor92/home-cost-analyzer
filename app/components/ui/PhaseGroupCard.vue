@@ -191,7 +191,7 @@ import { ref, computed } from 'vue'
 import { Calendar, CreditCard, Edit2, Trash2, ChevronDown, Plus, Tag } from 'lucide-vue-next'
 import Card from '~/components/ui/Card.vue'
 import Button from '~/components/ui/Button.vue'
-import type { PhaseGroupWithPhases, RenovationPhase } from '~/types/database'
+import type { PhaseGroupWithPhases, PhaseWithGroupAndCategory } from '~/types/database'
 
 // Helper functions for badge classes and text
 function getStatusBadgeClass(status: string) {
@@ -199,7 +199,7 @@ function getStatusBadgeClass(status: string) {
     'planned': 'bg-gray-100 text-gray-800',
     'in-progress': 'bg-blue-100 text-blue-800',
     'completed': 'bg-green-100 text-green-800'
-  }
+  } as Record<string, string>
   return classes[status] || classes.planned
 }
 
@@ -208,7 +208,7 @@ function getStatusText(status: string) {
     'planned': 'Planowany',
     'in-progress': 'W trakcie',
     'completed': 'Zakończony'
-  }
+  } as Record<string, string>
   return text[status] || status
 }
 
@@ -217,7 +217,7 @@ function getPriorityBadgeClass(priority: string) {
     'low': 'bg-gray-100 text-gray-600',
     'medium': 'bg-yellow-100 text-yellow-700',
     'high': 'bg-red-100 text-red-700'
-  }
+  } as Record<string, string>
   return classes[priority] || classes.medium
 }
 
@@ -226,7 +226,7 @@ function getPriorityText(priority: string) {
     'low': 'Niski',
     'medium': 'Średni', 
     'high': 'Wysoki'
-  }
+  } as Record<string, string>
   return text[priority] || priority
 }
 
@@ -239,9 +239,9 @@ interface Emits {
   (e: 'edit', group: PhaseGroupWithPhases): void
   (e: 'delete', group: PhaseGroupWithPhases): void
   (e: 'addPhase', group: PhaseGroupWithPhases): void
-  (e: 'editPhase', phase: RenovationPhase): void
-  (e: 'deletePhase', phase: RenovationPhase): void
-  (e: 'addExpenseToPhase', phase: RenovationPhase): void
+  (e: 'editPhase', phase: PhaseWithGroupAndCategory): void
+  (e: 'deletePhase', phase: PhaseWithGroupAndCategory): void
+  (e: 'addExpenseToPhase', phase: PhaseWithGroupAndCategory): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
