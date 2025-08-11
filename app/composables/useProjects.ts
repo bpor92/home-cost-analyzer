@@ -1,5 +1,4 @@
 import { ref, readonly } from 'vue'
-import { supabase } from '~/lib/supabase'
 import { useAuthStore } from '~/stores/auth'
 import type { Project } from '~/types'
 
@@ -9,9 +8,13 @@ export const useProjects = () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
 
+  const getAuthHeaders = () => {
+    const token = authStore.user?.access_token
+    return token ? { Authorization: `Bearer ${token}` } : undefined
+  }
+
   const fetchProjects = async () => {
     console.log('useProjects: fetchProjects called')
-    console.log('useProjects: authStore.user:', authStore.user)
     
     if (!authStore.user) {
       console.log('useProjects: No user found, returning early')
@@ -22,20 +25,17 @@ export const useProjects = () => {
     error.value = null
     
     try {
-      console.log('useProjects: Making Supabase query for user:', authStore.user.id)
-      const { data, error: supabaseError } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('user_id', authStore.user.id)
-        .order('created_at', { ascending: false })
+      console.log('useProjects: Making API call')
+      const response = await $fetch('/api/projects', {
+        method: 'GET',
+        headers: getAuthHeaders()
+      })
 
-      console.log('useProjects: Supabase response:', { data, supabaseError })
-
-      if (supabaseError) throw supabaseError
-      projects.value = data || []
+      console.log('useProjects: API response:', response)
+      projects.value = response.data || []
       console.log('useProjects: Projects set to:', projects.value)
     } catch (err: any) {
-      error.value = err.message || 'Failed to fetch projects'
+      error.value = err.statusMessage || err.message || 'Failed to fetch projects'
       console.error('Error fetching projects:', err)
     } finally {
       loading.value = false
@@ -46,21 +46,17 @@ export const useProjects = () => {
     if (!authStore.user) return null
 
     try {
-      const { data, error: supabaseError } = await supabase
-        .from('projects')
-        .insert({
-          ...projectData,
-          user_id: authStore.user.id
-        })
-        .select()
-        .single()
+      const response = await $fetch('/api/projects', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: projectData
+      })
 
-      if (supabaseError) throw supabaseError
-
-      projects.value.unshift(data)
-      return data
+      const newProject = response.data
+      projects.value.unshift(newProject)
+      return newProject
     } catch (err: any) {
-      error.value = err.message || 'Failed to create project'
+      error.value = err.statusMessage || err.message || 'Failed to create project'
       console.error('Error creating project:', err)
       return null
     }
@@ -68,23 +64,21 @@ export const useProjects = () => {
 
   const updateProject = async (id: string, updates: Partial<Project>) => {
     try {
-      const { data, error: supabaseError } = await supabase
-        .from('projects')
-        .update({ ...updates, updated_at: new Date().toISOString() })
-        .eq('id', id)
-        .select()
-        .single()
+      const response = await $fetch(`/api/projects/${id}`, {
+        method: 'PUT',
+        headers: getAuthHeaders(),
+        body: updates
+      })
 
-      if (supabaseError) throw supabaseError
-
+      const updatedProject = response.data
       const index = projects.value.findIndex(p => p.id === id)
       if (index !== -1) {
-        projects.value[index] = data
+        projects.value[index] = updatedProject
       }
 
-      return data
+      return updatedProject
     } catch (err: any) {
-      error.value = err.message || 'Failed to update project'
+      error.value = err.statusMessage || err.message || 'Failed to update project'
       console.error('Error updating project:', err)
       return null
     }
@@ -92,17 +86,15 @@ export const useProjects = () => {
 
   const deleteProject = async (id: string) => {
     try {
-      const { error: supabaseError } = await supabase
-        .from('projects')
-        .delete()
-        .eq('id', id)
-
-      if (supabaseError) throw supabaseError
+      await $fetch(`/api/projects/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      })
 
       projects.value = projects.value.filter(p => p.id !== id)
       return true
     } catch (err: any) {
-      error.value = err.message || 'Failed to delete project'
+      error.value = err.statusMessage || err.message || 'Failed to delete project'
       console.error('Error deleting project:', err)
       return false
     }

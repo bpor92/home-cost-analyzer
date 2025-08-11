@@ -4,6 +4,14 @@ export default defineNuxtConfig({
   // CSS configuration
   css: ['~/assets/main.css'],
   
+  // Runtime configuration
+  runtimeConfig: {
+    // Server-side environment variables
+    supabaseUrl: process.env.SUPABASE_URL,
+    supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY,
+    supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+  },
+  
   // Modules
   modules: [
     '@nuxtjs/tailwindcss',

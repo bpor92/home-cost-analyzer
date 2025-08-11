@@ -1,13 +1,19 @@
 import { ref, readonly, watch, computed } from 'vue'
 import type { Ref } from 'vue'
-import { supabase } from '~/lib/supabase'
+import { useAuthStore } from '~/stores/auth'
 import type { BudgetCategory, BorrowedFund, BudgetSummary, CategoryWithSpent } from '~/types'
 
 export const useBudget = (projectId: Ref<string | null>) => {
+  const authStore = useAuthStore()
   const categories = ref<BudgetCategory[]>([])
   const borrowedFunds = ref<BorrowedFund[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
+
+  const getAuthHeaders = () => {
+    const token = authStore.user?.access_token
+    return token ? { Authorization: `Bearer ${token}` } : undefined
+  }
 
   const defaultCategories = [
     'Instalacje (elektryka, hydraulika, gaz)',
@@ -27,27 +33,19 @@ export const useBudget = (projectId: Ref<string | null>) => {
     
     try {
       // Fetch budget categories
-      const { data: categoriesData, error: categoriesError } = await supabase
-        .from('budget_categories')
-        .select('*')
-        .eq('project_id', projectId.value)
-        .order('created_at')
+      const categoriesResponse = await $fetch(`/api/budget-categories/${projectId.value}`, {
+        method: 'GET',
+        headers: getAuthHeaders()
+      })
 
-      if (categoriesError) throw categoriesError
-      categories.value = categoriesData || []
+      categories.value = categoriesResponse.data || []
 
-      // Fetch borrowed funds
-      const { data: borrowedData, error: borrowedError } = await supabase
-        .from('borrowed_funds')
-        .select('*')
-        .eq('project_id', projectId.value)
-        .order('created_at')
-
-      if (borrowedError) throw borrowedError
-      borrowedFunds.value = borrowedData || []
+      // TODO: Add borrowed funds API endpoint
+      // For now, initialize as empty array
+      borrowedFunds.value = []
 
     } catch (err: any) {
-      error.value = err.message || 'Failed to fetch budget data'
+      error.value = err.statusMessage || err.message || 'Failed to fetch budget data'
       console.error('Error fetching budget data:', err)
     } finally {
       loading.value = false
@@ -58,160 +56,77 @@ export const useBudget = (projectId: Ref<string | null>) => {
     if (!projectId.value) return
 
     try {
-      const categoryInserts = defaultCategories.map(name => ({
-        project_id: projectId.value!,
-        name,
-        planned_amount: 0,
-        spent_amount: 0
-      }))
+      // Create default categories via API
+      for (const name of defaultCategories) {
+        await $fetch('/api/budget-categories', {
+          method: 'POST',
+          headers: getAuthHeaders(),
+          body: {
+            project_id: projectId.value,
+            name,
+            planned_amount: 0,
+            spent_amount: 0
+          }
+        })
+      }
 
-      const { error: insertError } = await supabase
-        .from('budget_categories')
-        .insert(categoryInserts)
-
-      if (insertError) throw insertError
-      
       await fetchBudgetData()
     } catch (err: any) {
-      error.value = err.message || 'Failed to initialize categories'
+      error.value = err.statusMessage || err.message || 'Failed to initialize default categories'
       console.error('Error initializing categories:', err)
     }
   }
 
-  const addBudgetCategory = async (name: string, plannedAmount: number = 0) => {
+  const addBudgetCategory = async (categoryData: Omit<BudgetCategory, 'id' | 'project_id' | 'created_at'>) => {
     if (!projectId.value) return null
 
     try {
-      const { data, error: supabaseError } = await supabase
-        .from('budget_categories')
-        .insert({
-          project_id: projectId.value,
-          name,
-          planned_amount: plannedAmount,
-          spent_amount: 0
-        })
-        .select()
-        .single()
+      const response = await $fetch('/api/budget-categories', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: {
+          ...categoryData,
+          project_id: projectId.value
+        }
+      })
 
-      if (supabaseError) throw supabaseError
-
-      categories.value.push(data)
-      return data
+      const newCategory = response.data
+      categories.value.push(newCategory)
+      return newCategory
     } catch (err: any) {
-      error.value = err.message || 'Failed to add category'
+      error.value = err.statusMessage || err.message || 'Failed to add budget category'
       console.error('Error adding category:', err)
       return null
     }
   }
 
+  // Simplified functions for now - TODO: implement API endpoints
   const updateBudgetCategory = async (id: string, updates: Partial<BudgetCategory>) => {
-    try {
-      const { data, error: supabaseError } = await supabase
-        .from('budget_categories')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single()
-
-      if (supabaseError) throw supabaseError
-
-      const index = categories.value.findIndex(c => c.id === id)
-      if (index !== -1) {
-        categories.value[index] = data
-      }
-
-      return data
-    } catch (err: any) {
-      error.value = err.message || 'Failed to update category'
-      console.error('Error updating category:', err)
-      return null
-    }
+    console.log('updateBudgetCategory not yet implemented via API', { id, updates })
+    return null
   }
 
   const deleteBudgetCategory = async (id: string) => {
-    try {
-      const { error: supabaseError } = await supabase
-        .from('budget_categories')
-        .delete()
-        .eq('id', id)
-
-      if (supabaseError) throw supabaseError
-
-      categories.value = categories.value.filter(c => c.id !== id)
-      return true
-    } catch (err: any) {
-      error.value = err.message || 'Failed to delete category'
-      console.error('Error deleting category:', err)
-      return false
-    }
+    console.log('deleteBudgetCategory not yet implemented via API', { id })
+    return false
   }
 
-  const addBorrowedFund = async (fundData: Omit<BorrowedFund, 'id' | 'created_at'>) => {
-    if (!projectId.value) return null
-
-    try {
-      const { data, error: supabaseError } = await supabase
-        .from('borrowed_funds')
-        .insert({
-          ...fundData,
-          project_id: projectId.value
-        })
-        .select()
-        .single()
-
-      if (supabaseError) throw supabaseError
-
-      borrowedFunds.value.push(data)
-      return data
-    } catch (err: any) {
-      error.value = err.message || 'Failed to add borrowed fund'
-      console.error('Error adding borrowed fund:', err)
-      return null
-    }
+  const addBorrowedFund = async (fundData: Omit<BorrowedFund, 'id' | 'project_id' | 'created_at'>) => {
+    console.log('addBorrowedFund not yet implemented via API', { fundData })
+    return null
   }
 
   const updateBorrowedFund = async (id: string, updates: Partial<BorrowedFund>) => {
-    try {
-      const { data, error: supabaseError } = await supabase
-        .from('borrowed_funds')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single()
-
-      if (supabaseError) throw supabaseError
-
-      const index = borrowedFunds.value.findIndex(f => f.id === id)
-      if (index !== -1) {
-        borrowedFunds.value[index] = data
-      }
-
-      return data
-    } catch (err: any) {
-      error.value = err.message || 'Failed to update borrowed fund'
-      console.error('Error updating borrowed fund:', err)
-      return null
-    }
+    console.log('updateBorrowedFund not yet implemented via API', { id, updates })
+    return null
   }
 
   const deleteBorrowedFund = async (id: string) => {
-    try {
-      const { error: supabaseError } = await supabase
-        .from('borrowed_funds')
-        .delete()
-        .eq('id', id)
-
-      if (supabaseError) throw supabaseError
-
-      borrowedFunds.value = borrowedFunds.value.filter(f => f.id !== id)
-      return true
-    } catch (err: any) {
-      error.value = err.message || 'Failed to delete borrowed fund'
-      console.error('Error deleting borrowed fund:', err)
-      return false
-    }
+    console.log('deleteBorrowedFund not yet implemented via API', { id })
+    return false
   }
 
+  // Computed properties
   const totalPlannedBudget = computed(() => {
     return categories.value.reduce((sum, category) => sum + category.planned_amount, 0)
   })
@@ -225,17 +140,15 @@ export const useBudget = (projectId: Ref<string | null>) => {
   })
 
   const budgetSummary = computed<BudgetSummary>(() => {
-    const totalBudget = totalPlannedBudget.value
-    const borrowedTotal = totalBorrowedAmount.value
-    const ownBudget = totalBudget - borrowedTotal
+    const totalBudget = totalPlannedBudget.value + totalBorrowedAmount.value
     const totalSpent = totalSpentBudget.value
     const remainingBudget = totalBudget - totalSpent
     const spentPercentage = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0
 
     return {
       totalBudget,
-      ownBudget,
-      borrowedTotal,
+      ownBudget: totalPlannedBudget.value,
+      borrowedTotal: totalBorrowedAmount.value,
       totalSpent,
       remainingBudget,
       spentPercentage
@@ -245,20 +158,15 @@ export const useBudget = (projectId: Ref<string | null>) => {
   const categoriesWithProgress = computed<CategoryWithSpent[]>(() => {
     return categories.value.map(category => ({
       ...category,
-      expenses: [], // This would be populated separately if needed
-      spentPercentage: category.planned_amount > 0 
-        ? (category.spent_amount / category.planned_amount) * 100 
-        : 0
+      expenses: [], // TODO: fetch expenses
+      spentPercentage: category.planned_amount > 0 ? (category.spent_amount / category.planned_amount) * 100 : 0
     }))
   })
 
-  // Watch for project changes
-  watch(projectId, () => {
-    if (projectId.value) {
+  // Watch for project changes and fetch data
+  watch(projectId, (newProjectId) => {
+    if (newProjectId) {
       fetchBudgetData()
-    } else {
-      categories.value = []
-      borrowedFunds.value = []
     }
   }, { immediate: true })
 
@@ -273,7 +181,7 @@ export const useBudget = (projectId: Ref<string | null>) => {
     budgetSummary,
     categoriesWithProgress,
     fetchBudgetData,
-    initializeDefaultCategories,
+    initializeDefaultCategories: initializeDefaultCategories,
     addBudgetCategory,
     updateBudgetCategory,
     deleteBudgetCategory,

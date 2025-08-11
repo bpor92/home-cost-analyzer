@@ -1,11 +1,17 @@
 import { ref, computed } from 'vue'
-import { supabase } from '~/lib/supabase'
-import type { RenovationPhase } from '~/types/database'
+import { useAuthStore } from '~/stores/auth'
+import type { PhaseWithGroupAndCategory } from '~/types/database'
 
 export function useRenovationPhases() {
-  const phases = ref<RenovationPhase[]>([])
+  const authStore = useAuthStore()
+  const phases = ref<PhaseWithGroupAndCategory[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
+
+  const getAuthHeaders = () => {
+    const token = authStore.user?.access_token
+    return token ? { Authorization: `Bearer ${token}` } : undefined
+  }
 
   const sortedPhases = computed(() => {
     return [...phases.value].sort((a, b) => a.order_index - b.order_index)
@@ -28,148 +34,43 @@ export function useRenovationPhases() {
     error.value = null
     
     try {
-      const { data, error: fetchError } = await supabase
-        .from('renovation_phases')
-        .select(`
-          *,
-          budget_categories (
-            name
-          )
-        `)
-        .eq('project_id', projectId)
-        .order('order_index', { ascending: true })
+      const response = await $fetch(`/api/renovation-phases/${projectId}`, {
+        method: 'GET',
+        headers: getAuthHeaders()
+      })
 
-      if (fetchError) throw fetchError
-      phases.value = data || []
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Błąd podczas pobierania etapów'
+      phases.value = response.data || []
+    } catch (err: any) {
+      error.value = err.statusMessage || err.message || 'Błąd podczas pobierania etapów'
       console.error('Error fetching phases:', err)
     } finally {
       loading.value = false
     }
   }
 
-  async function createPhase(projectId: string, phaseData: Omit<RenovationPhase, 'id' | 'project_id' | 'created_at'>) {
-    loading.value = true
-    error.value = null
-
-    try {
-      const nextOrderIndex = Math.max(...phases.value.map(p => p.order_index), -1) + 1
-      
-      const { data, error: createError } = await supabase
-        .from('renovation_phases')
-        .insert([{
-          project_id: projectId,
-          ...phaseData,
-          order_index: nextOrderIndex
-        }])
-        .select()
-        .single()
-
-      if (createError) throw createError
-      if (data) {
-        phases.value.push(data)
-      }
-      
-      return data
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Błąd podczas tworzenia etapu'
-      console.error('Error creating phase:', err)
-      throw err
-    } finally {
-      loading.value = false
-    }
+  async function createPhase(projectId: string, phaseData: any) {
+    console.log('createPhase not yet implemented via API', { projectId, phaseData })
+    return null
   }
 
-  async function updatePhase(phaseId: string, updates: Partial<RenovationPhase>) {
-    loading.value = true
-    error.value = null
-
-    try {
-      const { data, error: updateError } = await supabase
-        .from('renovation_phases')
-        .update(updates)
-        .eq('id', phaseId)
-        .select()
-        .single()
-
-      if (updateError) throw updateError
-      
-      if (data) {
-        const index = phases.value.findIndex(p => p.id === phaseId)
-        if (index !== -1) {
-          phases.value[index] = data
-        }
-      }
-      
-      return data
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Błąd podczas aktualizacji etapu'
-      console.error('Error updating phase:', err)
-      throw err
-    } finally {
-      loading.value = false
-    }
+  async function updatePhase(phaseId: string, updates: any) {
+    console.log('updatePhase not yet implemented via API', { phaseId, updates })
+    return null
   }
 
   async function deletePhase(phaseId: string) {
-    loading.value = true
-    error.value = null
-
-    try {
-      const { error: deleteError } = await supabase
-        .from('renovation_phases')
-        .delete()
-        .eq('id', phaseId)
-
-      if (deleteError) throw deleteError
-      
-      phases.value = phases.value.filter(p => p.id !== phaseId)
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Błąd podczas usuwania etapu'
-      console.error('Error deleting phase:', err)
-      throw err
-    } finally {
-      loading.value = false
-    }
+    console.log('deletePhase not yet implemented via API', { phaseId })
+    return false
   }
 
   async function updatePhaseOrder(phaseId: string, newOrderIndex: number) {
-    try {
-      await updatePhase(phaseId, { order_index: newOrderIndex })
-    } catch (err) {
-      console.error('Error updating phase order:', err)
-      throw err
-    }
+    console.log('updatePhaseOrder not yet implemented via API', { phaseId, newOrderIndex })
+    return false
   }
 
   async function bulkUpdatePhaseOrder(phaseUpdates: { id: string; order_index: number }[]) {
-    loading.value = true
-    error.value = null
-
-    try {
-      const updates = phaseUpdates.map(update => 
-        supabase
-          .from('renovation_phases')
-          .update({ order_index: update.order_index })
-          .eq('id', update.id)
-      )
-
-      await Promise.all(updates)
-      
-      phaseUpdates.forEach(update => {
-        const phase = phases.value.find(p => p.id === update.id)
-        if (phase) {
-          phase.order_index = update.order_index
-        }
-      })
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Błąd podczas aktualizacji kolejności etapów'
-      console.error('Error updating phases order:', err)
-      throw err
-    } finally {
-      loading.value = false
-    }
+    console.log('bulkUpdatePhaseOrder not yet implemented via API', { phaseUpdates })
+    return false
   }
 
   function clearError() {

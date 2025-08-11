@@ -3,6 +3,7 @@ export * from './database'
 export interface User {
   id: string
   email?: string
+  access_token?: string
 }
 
 export interface AuthState {

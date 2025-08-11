@@ -1,112 +1,37 @@
 import { ref, readonly, watch, computed } from 'vue'
 import type { Ref } from 'vue'
-import { supabase } from '~/lib/supabase'
+import { useAuthStore } from '~/stores/auth'
 import type { Expense, ExpenseWithCategory, FilterOptions } from '~/types'
 
 export const useExpenses = (projectId: Ref<string | null>) => {
+  const authStore = useAuthStore()
   const expenses = ref<ExpenseWithCategory[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
 
-  const fetchExpenses = async () => {
-    if (!projectId.value) return
-    
-    loading.value = true
-    error.value = null
-    
-    try {
-      const { data, error: supabaseError } = await supabase
-        .from('expenses')
-        .select(`
-          *,
-          budget_categories(name),
-          renovation_phases(name)
-        `)
-        .eq('project_id', projectId.value)
-        .order('expense_date', { ascending: false })
+  const getAuthHeaders = () => {
+    const token = authStore.user?.access_token
+    return token ? { Authorization: `Bearer ${token}` } : undefined
+  }
 
-      if (supabaseError) throw supabaseError
-      expenses.value = data || []
-    } catch (err: any) {
-      error.value = err.message || 'Failed to fetch expenses'
-      console.error('Error fetching expenses:', err)
-    } finally {
-      loading.value = false
-    }
+  const fetchExpenses = async () => {
+    console.log('fetchExpenses not yet implemented via API', { projectId: projectId.value })
+    expenses.value = []
   }
 
   const addExpense = async (expenseData: Omit<Expense, 'id' | 'created_at'>) => {
-    if (!projectId.value) return null
-
-    try {
-      const { data, error: supabaseError } = await supabase
-        .from('expenses')
-        .insert({
-          ...expenseData,
-          project_id: projectId.value
-        })
-        .select(`
-          *,
-          budget_categories(name),
-          renovation_phases(name)
-        `)
-        .single()
-
-      if (supabaseError) throw supabaseError
-
-      expenses.value.unshift(data)
-      return data
-    } catch (err: any) {
-      error.value = err.message || 'Failed to add expense'
-      console.error('Error adding expense:', err)
-      return null
-    }
+    console.log('addExpense not yet implemented via API', { expenseData })
+    return null
   }
 
   const updateExpense = async (id: string, updates: Partial<Expense>) => {
-    try {
-      const { data, error: supabaseError } = await supabase
-        .from('expenses')
-        .update(updates)
-        .eq('id', id)
-        .select(`
-          *,
-          budget_categories(name),
-          renovation_phases(name)
-        `)
-        .single()
-
-      if (supabaseError) throw supabaseError
-
-      const index = expenses.value.findIndex(e => e.id === id)
-      if (index !== -1) {
-        expenses.value[index] = data
-      }
-
-      return data
-    } catch (err: any) {
-      error.value = err.message || 'Failed to update expense'
-      console.error('Error updating expense:', err)
-      return null
-    }
+    console.log('updateExpense not yet implemented via API', { id, updates })
+    return null
   }
 
   const deleteExpense = async (id: string) => {
-    try {
-      const { error: supabaseError } = await supabase
-        .from('expenses')
-        .delete()
-        .eq('id', id)
-
-      if (supabaseError) throw supabaseError
-
-      expenses.value = expenses.value.filter(e => e.id !== id)
-      return true
-    } catch (err: any) {
-      error.value = err.message || 'Failed to delete expense'
-      console.error('Error deleting expense:', err)
-      return false
-    }
+    console.log('deleteExpense not yet implemented via API', { id })
+    return false
   }
 
   const filterExpenses = (filters: FilterOptions) => {

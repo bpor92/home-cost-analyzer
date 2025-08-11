@@ -1,11 +1,17 @@
 import { ref, computed } from 'vue'
-import { supabase } from '~/lib/supabase'
+import { useAuthStore } from '~/stores/auth'
 import type { BudgetCategory } from '~/types/database'
 
 export function useBudgetCategories() {
+  const authStore = useAuthStore()
   const categories = ref<BudgetCategory[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
+
+  const getAuthHeaders = () => {
+    const token = authStore.user?.access_token
+    return token ? { Authorization: `Bearer ${token}` } : undefined
+  }
 
   const sortedCategories = computed(() => {
     return [...categories.value].sort((a, b) => a.name.localeCompare(b.name))
@@ -16,16 +22,14 @@ export function useBudgetCategories() {
     error.value = null
     
     try {
-      const { data, error: fetchError } = await supabase
-        .from('budget_categories')
-        .select('*')
-        .eq('project_id', projectId)
-        .order('name', { ascending: true })
+      const response = await $fetch(`/api/budget-categories/${projectId}`, {
+        method: 'GET',
+        headers: getAuthHeaders()
+      })
 
-      if (fetchError) throw fetchError
-      categories.value = data || []
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Błąd podczas pobierania kategorii'
+      categories.value = response.data || []
+    } catch (err: any) {
+      error.value = err.statusMessage || err.message || 'Błąd podczas pobierania kategorii'
       console.error('Error fetching categories:', err)
     } finally {
       loading.value = false
@@ -37,23 +41,23 @@ export function useBudgetCategories() {
     error.value = null
 
     try {
-      const { data, error: createError } = await supabase
-        .from('budget_categories')
-        .insert([{
+      const response = await $fetch('/api/budget-categories', {
+        method: 'POST',
+        headers: getAuthHeaders(),
+        body: {
           project_id: projectId,
           ...categoryData
-        }])
-        .select()
-        .single()
+        }
+      })
 
-      if (createError) throw createError
-      if (data) {
-        categories.value.push(data)
+      const newCategory = response.data
+      if (newCategory) {
+        categories.value.push(newCategory)
       }
       
-      return data
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Błąd podczas tworzenia kategorii'
+      return newCategory
+    } catch (err: any) {
+      error.value = err.statusMessage || err.message || 'Błąd podczas tworzenia kategorii'
       console.error('Error creating category:', err)
       throw err
     } finally {
@@ -62,56 +66,13 @@ export function useBudgetCategories() {
   }
 
   async function updateCategory(categoryId: string, updates: Partial<BudgetCategory>) {
-    loading.value = true
-    error.value = null
-
-    try {
-      const { data, error: updateError } = await supabase
-        .from('budget_categories')
-        .update(updates)
-        .eq('id', categoryId)
-        .select()
-        .single()
-
-      if (updateError) throw updateError
-      
-      if (data) {
-        const index = categories.value.findIndex(c => c.id === categoryId)
-        if (index !== -1) {
-          categories.value[index] = data
-        }
-      }
-      
-      return data
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Błąd podczas aktualizacji kategorii'
-      console.error('Error updating category:', err)
-      throw err
-    } finally {
-      loading.value = false
-    }
+    console.log('updateCategory not yet implemented via API', { categoryId, updates })
+    return null
   }
 
   async function deleteCategory(categoryId: string) {
-    loading.value = true
-    error.value = null
-
-    try {
-      const { error: deleteError } = await supabase
-        .from('budget_categories')
-        .delete()
-        .eq('id', categoryId)
-
-      if (deleteError) throw deleteError
-      
-      categories.value = categories.value.filter(c => c.id !== categoryId)
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Błąd podczas usuwania kategorii'
-      console.error('Error deleting category:', err)
-      throw err
-    } finally {
-      loading.value = false
-    }
+    console.log('deleteCategory not yet implemented via API', { categoryId })
+    return false
   }
 
   function clearError() {

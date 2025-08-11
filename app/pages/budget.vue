@@ -490,7 +490,11 @@ const saveCategory = async () => {
         planned_amount: categoryForm.planned_amount
       })
     } else {
-      await addBudgetCategory(categoryForm.name, categoryForm.planned_amount)
+      await addBudgetCategory({
+        name: categoryForm.name,
+        planned_amount: categoryForm.planned_amount,
+        spent_amount: 0
+      })
     }
     
     showAddCategoryModal.value = false
@@ -514,10 +518,7 @@ const saveBorrowedFund = async () => {
     if (editingBorrowedFund.value) {
       await updateBorrowedFund(editingBorrowedFund.value.id, fundData)
     } else {
-      await addBorrowedFund({
-        ...fundData,
-        project_id: currentProjectId.value!
-      })
+      await addBorrowedFund(fundData)
     }
     
     showAddBorrowedModal.value = false
