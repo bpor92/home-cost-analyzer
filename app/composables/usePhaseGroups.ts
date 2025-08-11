@@ -69,7 +69,7 @@ export function usePhaseGroups() {
           if (!phasesByGroup[phase.group_id]) {
             phasesByGroup[phase.group_id] = []
           }
-          phasesByGroup[phase.group_id].push(phase)
+          phasesByGroup[phase.group_id]?.push(phase)
         } else {
           ungroupedPhases.push(phase)
         }

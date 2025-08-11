@@ -8,6 +8,11 @@
 import { onMounted } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 
+// Define component name for ESLint
+defineOptions({
+  name: 'HomePage'
+})
+
 const authStore = useAuthStore()
 
 onMounted(async () => {

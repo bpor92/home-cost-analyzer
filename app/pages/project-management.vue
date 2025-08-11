@@ -687,7 +687,7 @@
           :phase="editingPhase || undefined"
           :loading="formLoading"
           :available-groups="groups"
-          :available-categories="categories"
+          :available-categories="categories.map(c => ({ id: c.id, name: c.name }))"
           @submit="handleFormSubmit"
           @cancel="closeModal"
         />
@@ -1007,7 +1007,7 @@ const borrowedForm = reactive({
 const expenseForm = reactive({
   name: '',
   amount: 0,
-  expense_date: '',
+  expense_date: '' as string,
   description: ''
 })
 
@@ -1025,7 +1025,7 @@ const deleteConfirmText = computed(() => {
 const upcomingPhases = computed(() => {
   return phases.value
     .filter(phase => phase.status !== 'completed')
-    .sort((a, b) => new Date(a.start_date).getTime() - new Date(b.start_date).getTime())
+    .sort((a, b) => new Date(a.start_date || '').getTime() - new Date(b.start_date || '').getTime())
 })
 
 // Budget-Phase integration computed properties
@@ -1187,7 +1187,7 @@ function openExpenseModalForPhase(phase: RenovationPhase) {
   targetPhase.value = phase
   expenseForm.name = ''
   expenseForm.amount = 0
-  expenseForm.expense_date = new Date().toISOString().split('T')[0]
+  expenseForm.expense_date = new Date().toISOString().split('T')[0] || ''
   expenseForm.description = ''
   showExpenseModal.value = true
 }
@@ -1393,7 +1393,8 @@ const formatCurrency = (amount: number) => {
   }).format(amount)
 }
 
-const formatDate = (dateString: string) => {
+const formatDate = (dateString: string | null) => {
+  if (!dateString) return 'Nie ustawiono'
   return new Date(dateString).toLocaleDateString('pl-PL', {
     year: 'numeric',
     month: 'long',

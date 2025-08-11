@@ -97,7 +97,9 @@ async function enableDragMode() {
     onEnd: (evt: any) => {
       if (evt.oldIndex !== undefined && evt.newIndex !== undefined) {
         const item = localPhases.value.splice(evt.oldIndex, 1)[0]
-        localPhases.value.splice(evt.newIndex, 0, item)
+        if (item) {
+          localPhases.value.splice(evt.newIndex, 0, item)
+        }
         
         localPhases.value.forEach((phase, index) => {
           phase.order_index = index

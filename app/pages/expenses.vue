@@ -393,7 +393,7 @@ const expenseForm = ref({
   category_id: '',
   phase_id: '',
   amount: '',
-  expense_date: '',
+  expense_date: '' as string,
   description: ''
 })
 
@@ -469,7 +469,7 @@ const selectedPhase = computed(() => {
 
 const selectedPhaseCategory = computed(() => {
   if (!selectedPhase.value?.category_id) return null
-  return categories.value.find(category => category.id === selectedPhase.value.category_id)
+  return categories.value.find(category => category.id === selectedPhase.value?.category_id)
 })
 
 const canSaveExpense = computed(() => {
@@ -598,7 +598,7 @@ watch(filters, () => {
 // Set default date to today when adding new expense
 watch(showAddExpenseModal, (show) => {
   if (show && !editingExpense.value) {
-    expenseForm.value.expense_date = new Date().toISOString().split('T')[0]
+    expenseForm.value.expense_date = new Date().toISOString().split('T')[0] || ''
   }
 })
 

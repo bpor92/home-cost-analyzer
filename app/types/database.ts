@@ -93,7 +93,7 @@ export interface ExpenseWithCategory extends Expense {
 }
 
 export interface PhaseGroupWithPhases extends PhaseGroup {
-  phases: RenovationPhase[]
+  phases: PhaseWithGroupAndCategory[]
   totalBudget: number
   totalProgress: number
   phaseCount: number

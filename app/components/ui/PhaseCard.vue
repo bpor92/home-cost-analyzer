@@ -95,7 +95,7 @@ import { computed, defineComponent, type PropType, h } from 'vue'
 import { Calendar, CreditCard, FileText, Edit2, Trash2, GripVertical, Tag, Plus, Receipt } from 'lucide-vue-next'
 import Card from '~/components/ui/Card.vue'
 import Button from '~/components/ui/Button.vue'
-import type { RenovationPhase } from '~/types/database'
+import type { PhaseWithGroupAndCategory } from '~/types/database'
 
 const StatusBadge = defineComponent({
   props: {
@@ -178,15 +178,15 @@ const PriorityBadge = defineComponent({
 })
 
 interface Props {
-  phase: RenovationPhase
+  phase: PhaseWithGroupAndCategory
   showDragHandle?: boolean
   phaseExpenseTotal?: number
 }
 
 interface Emits {
-  (e: 'edit', phase: RenovationPhase): void
-  (e: 'delete', phase: RenovationPhase): void
-  (e: 'add-expense', phase: RenovationPhase): void
+  (e: 'edit', phase: PhaseWithGroupAndCategory): void
+  (e: 'delete', phase: PhaseWithGroupAndCategory): void
+  (e: 'add-expense', phase: PhaseWithGroupAndCategory): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
