@@ -8,6 +8,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const initialize = async () => {
     // Check for stored token
+    if (typeof window === 'undefined') return // Skip on server-side
     const storedToken = localStorage.getItem('auth_token')
     
     if (storedToken) {
@@ -23,11 +24,15 @@ export const useAuthStore = defineStore('auth', () => {
             access_token: storedToken
           }
         } else {
-          localStorage.removeItem('auth_token')
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('auth_token')
+          }
         }
       } catch (error) {
         console.error('Session validation failed:', error)
-        localStorage.removeItem('auth_token')
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('auth_token')
+        }
       }
     }
     
@@ -50,7 +55,9 @@ export const useAuthStore = defineStore('auth', () => {
           access_token: accessToken
         }
         
-        localStorage.setItem('auth_token', accessToken)
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('auth_token', accessToken)
+        }
         return { data: response.data, error: null }
       }
       
@@ -80,7 +87,9 @@ export const useAuthStore = defineStore('auth', () => {
       })
 
       user.value = null
-      localStorage.removeItem('auth_token')
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('auth_token')
+      }
       return { error: null }
     } catch (error: any) {
       return { error: { message: error.statusMessage || 'Sign out failed' } }

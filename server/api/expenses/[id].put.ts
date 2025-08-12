@@ -4,25 +4,22 @@ import { requireAuth } from '../../utils/auth'
 export default defineEventHandler(
   requireAuth(async (event, user) => {
     try {
-      const projectId = getRouterParam(event, 'projectId') || event.context.params?.projectId || event.context.params?.id
+      const expenseId = getRouterParam(event, 'id')
+      const body = await readBody(event)
       
-      if (!projectId) {
-        throw createError({
-          statusCode: 400,
-          statusMessage: 'Project ID is required'
-        })
-      }
-      
-      // Verify user owns the project
-      const { data: project, error: projectError } = await supabaseAdmin
-        .from('projects')
-        .select('id')
-        .eq('id', projectId)
-        .eq('user_id', user.id)
+      // First verify user owns the expense through the project
+      const { data: expense } = await supabaseAdmin
+        .from('expenses')
+        .select(`
+          id,
+          projects!inner(
+            user_id
+          )
+        `)
+        .eq('id', expenseId)
         .single()
-        
 
-      if (!project) {
+      if (!expense || (expense.projects as any).user_id !== user.id) {
         throw createError({
           statusCode: 403,
           statusMessage: 'Access denied'
@@ -31,6 +28,8 @@ export default defineEventHandler(
 
       const { data, error } = await supabaseAdmin
         .from('expenses')
+        .update(body)
+        .eq('id', expenseId)
         .select(`
           *,
           budget_categories (
@@ -40,8 +39,7 @@ export default defineEventHandler(
             name
           )
         `)
-        .eq('project_id', projectId)
-        .order('expense_date', { ascending: false })
+        .single()
 
       if (error) {
         throw createError({
@@ -54,7 +52,7 @@ export default defineEventHandler(
     } catch (error: any) {
       throw createError({
         statusCode: 500,
-        statusMessage: error.message || 'Failed to fetch expenses'
+        statusMessage: error.message || 'Failed to update expense'
       })
     }
   })

@@ -356,12 +356,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, watchEffect } from 'vue'
 import { 
   Plus, DollarSign, Receipt, TrendingUp,
   ChevronLeft, ChevronRight
 } from 'lucide-vue-next'
 import { useProjectsStore } from '~/stores/projects'
+import { useAuthStore } from '~/stores/auth'
 import { useExpenses } from '~/composables/useExpenses'
 import { useBudget } from '~/composables/useBudget'
 import { useRenovationPhases } from '~/composables/useRenovationPhases'
@@ -599,6 +600,17 @@ watch(filters, () => {
 watch(showAddExpenseModal, (show) => {
   if (show && !editingExpense.value) {
     expenseForm.value.expense_date = new Date().toISOString().split('T')[0] || ''
+  }
+})
+
+// Check auth and load data on mount
+const authStore = useAuthStore()
+
+// Add auth check
+watchEffect(() => {
+  if (!authStore.loading && !authStore.user) {
+    navigateTo('/auth/login')
+    return
   }
 })
 

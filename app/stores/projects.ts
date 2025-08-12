@@ -11,7 +11,9 @@ export const useProjectsStore = defineStore('projects', () => {
   const setCurrentProject = (project: Project) => {
     currentProject.value = project
     // Store in localStorage for persistence
-    localStorage.setItem('currentProject', JSON.stringify(project))
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('currentProject', JSON.stringify(project))
+    }
   }
 
   const addProject = (project: Project) => {
@@ -31,7 +33,9 @@ export const useProjectsStore = defineStore('projects', () => {
     // Update current project if it's the same
     if (currentProject.value?.id === updatedProject.id) {
       currentProject.value = updatedProject
-      localStorage.setItem('currentProject', JSON.stringify(updatedProject))
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('currentProject', JSON.stringify(updatedProject))
+      }
     }
   }
 
@@ -41,18 +45,24 @@ export const useProjectsStore = defineStore('projects', () => {
     // Clear current project if it's the deleted one
     if (currentProject.value?.id === projectId) {
       currentProject.value = null
-      localStorage.removeItem('currentProject')
+      if (typeof window !== 'undefined') {
+        localStorage.removeItem('currentProject')
+      }
     }
   }
 
   const loadCurrentProject = () => {
+    if (typeof window === 'undefined') return // Skip on server-side
+    
     const stored = localStorage.getItem('currentProject')
     if (stored) {
       try {
         currentProject.value = JSON.parse(stored)
       } catch (error) {
         console.error('Error loading current project:', error)
-        localStorage.removeItem('currentProject')
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('currentProject')
+        }
       }
     }
   }

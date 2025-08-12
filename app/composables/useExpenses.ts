@@ -15,23 +15,109 @@ export const useExpenses = (projectId: Ref<string | null>) => {
   }
 
   const fetchExpenses = async () => {
-    console.log('fetchExpenses not yet implemented via API', { projectId: projectId.value })
-    expenses.value = []
+    if (!projectId.value) {
+      expenses.value = []
+      return
+    }
+
+    loading.value = true
+    error.value = null
+
+    const headers = getAuthHeaders()
+
+    try {
+      // @ts-ignore - Complex Nuxt route typing issue
+      const response = await $fetch(`/api/expenses/${projectId.value}`, {
+        headers
+      }) as { data: ExpenseWithCategory[] }
+      const data = response.data
+      expenses.value = data || []
+    } catch (err: any) {
+      console.error('Error fetching expenses:', err)
+      error.value = err.message || 'Failed to fetch expenses'
+      expenses.value = []
+    } finally {
+      loading.value = false
+    }
   }
 
   const addExpense = async (expenseData: Omit<Expense, 'id' | 'created_at'>) => {
-    console.log('addExpense not yet implemented via API', { expenseData })
-    return null
+    loading.value = true
+    error.value = null
+
+    try {
+      // @ts-ignore - Complex Nuxt route typing issue
+      const response = await $fetch('/api/expenses', {
+        method: 'POST',
+        body: expenseData,
+        headers: getAuthHeaders()
+      }) as { data: ExpenseWithCategory }
+      const data = response.data
+      
+      if (data) {
+        expenses.value.unshift(data)
+      }
+      
+      return data
+    } catch (err: any) {
+      console.error('Error adding expense:', err)
+      error.value = err.message || 'Failed to add expense'
+      throw err
+    } finally {
+      loading.value = false
+    }
   }
 
   const updateExpense = async (id: string, updates: Partial<Expense>) => {
-    console.log('updateExpense not yet implemented via API', { id, updates })
-    return null
+    loading.value = true
+    error.value = null
+
+    try {
+      // @ts-ignore - Complex Nuxt route typing issue
+      const response = await $fetch(`/api/expenses/${id}`, {
+        method: 'PUT',
+        body: updates,
+        headers: getAuthHeaders()
+      }) as { data: ExpenseWithCategory }
+      const data = response.data
+      
+      if (data) {
+        const index = expenses.value.findIndex(expense => expense.id === id)
+        if (index !== -1) {
+          expenses.value[index] = data
+        }
+      }
+      
+      return data
+    } catch (err: any) {
+      console.error('Error updating expense:', err)
+      error.value = err.message || 'Failed to update expense'
+      throw err
+    } finally {
+      loading.value = false
+    }
   }
 
   const deleteExpense = async (id: string) => {
-    console.log('deleteExpense not yet implemented via API', { id })
-    return false
+    loading.value = true
+    error.value = null
+
+    try {
+      // @ts-ignore - Complex Nuxt route typing issue
+      await $fetch(`/api/expenses/${id}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+      })
+      
+      expenses.value = expenses.value.filter(expense => expense.id !== id)
+      return true
+    } catch (err: any) {
+      console.error('Error deleting expense:', err)
+      error.value = err.message || 'Failed to delete expense'
+      throw err
+    } finally {
+      loading.value = false
+    }
   }
 
   const filterExpenses = (filters: FilterOptions) => {
