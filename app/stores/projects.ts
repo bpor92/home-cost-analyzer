@@ -18,6 +18,10 @@ export const useProjectsStore = defineStore('projects', () => {
     projects.value.unshift(project)
   }
 
+  const setProjects = (newProjects: Project[]) => {
+    projects.value = newProjects
+  }
+
   const updateProject = (updatedProject: Project) => {
     const index = projects.value.findIndex(p => p.id === updatedProject.id)
     if (index !== -1) {
@@ -59,6 +63,7 @@ export const useProjectsStore = defineStore('projects', () => {
     hasCurrentProject,
     setCurrentProject,
     addProject,
+    setProjects,
     updateProject,
     removeProject,
     loadCurrentProject

@@ -55,7 +55,8 @@ import {
   Settings,
   HelpCircle,
   FolderOpen,
-  LayoutDashboard
+  LayoutDashboard,
+  Package
 } from 'lucide-vue-next'
 import type { MenuItem } from '~/types'
 import ProjectSelector from '~/components/ui/ProjectSelector.vue'
@@ -84,6 +85,11 @@ const menuItems = computed<MenuItem[]>(() => [
     icon: 'Receipt'
   },
   {
+    name: 'Materiały',
+    path: '/materials',
+    icon: 'Package'
+  },
+  {
     name: 'Raporty',
     path: '/reports',
     icon: 'BarChart3'
@@ -101,6 +107,7 @@ const getIcon = (iconName: string) => {
     FolderOpen,
     LayoutDashboard,
     Receipt,
+    Package,
     BarChart3,
     Settings,
     HelpCircle

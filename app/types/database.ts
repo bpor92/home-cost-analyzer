@@ -122,3 +122,35 @@ export interface PhaseWithGroupAndCategory extends RenovationPhase {
     name: string
   }
 }
+
+export interface Room {
+  id: string
+  project_id: string
+  name: string
+  created_at: string
+  updated_at: string
+}
+
+export interface Material {
+  id: string
+  room_id: string
+  project_id: string
+  name: string
+  description: string | null
+  product_url: string | null
+  type: 'tiles' | 'flooring' | 'paint' | 'other'
+  price: number | null
+  quantity: number | null
+  unit: string | null
+  width: number | null
+  height: number | null
+  area_per_unit: number | null
+  created_at: string
+  updated_at: string
+}
+
+export interface MaterialWithRoom extends Material {
+  rooms?: {
+    name: string
+  }
+}

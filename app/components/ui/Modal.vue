@@ -56,6 +56,7 @@
 import { computed } from 'vue'
 
 interface Props {
+  modelValue?: boolean
   open?: boolean
   show?: boolean
   title?: string
@@ -65,20 +66,23 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   closeOnBackdrop: true,
   open: false,
-  show: false
+  show: false,
+  modelValue: false
 })
 
 const emit = defineEmits<{
   close: []
   'update:open': [value: boolean]
+  'update:modelValue': [value: boolean]
 }>()
 
-const isOpen = computed(() => props.open ?? props.show)
+const isOpen = computed(() => props.modelValue ?? props.open ?? props.show)
 
 const handleBackdropClick = () => {
   if (props.closeOnBackdrop) {
     emit('close')
     emit('update:open', false)
+    emit('update:modelValue', false)
   }
 }
 </script>

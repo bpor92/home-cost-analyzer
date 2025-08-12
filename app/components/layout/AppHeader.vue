@@ -38,11 +38,18 @@
               class="flex items-center space-x-2 p-2 rounded-md text-gray-700 hover:bg-gray-100"
             >
               <div class="h-8 w-8 bg-primary-500 rounded-full flex items-center justify-center">
-                <span class="text-white font-medium text-sm">
-                  {{ userInitial }}
-                </span>
+                <ClientOnly>
+                  <span class="text-white font-medium text-sm">
+                    {{ userInitial }}
+                  </span>
+                  <template #fallback>
+                    <span class="text-white font-medium text-sm">?</span>
+                  </template>
+                </ClientOnly>
               </div>
-              <span class="hidden md:block text-sm font-medium">{{ userEmail }}</span>
+              <ClientOnly>
+                <span class="hidden md:block text-sm font-medium">{{ userEmail }}</span>
+              </ClientOnly>
               <ChevronDown class="h-4 w-4" />
             </button>
 

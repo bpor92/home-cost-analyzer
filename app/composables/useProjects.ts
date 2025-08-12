@@ -1,10 +1,11 @@
 import { ref, readonly } from 'vue'
 import { useAuthStore } from '~/stores/auth'
+import { useProjectsStore } from '~/stores/projects'
 import type { Project } from '~/types'
 
 export const useProjects = () => {
   const authStore = useAuthStore()
-  const projects = ref<Project[]>([])
+  const projectsStore = useProjectsStore()
   const loading = ref(false)
   const error = ref<string | null>(null)
 
@@ -32,8 +33,8 @@ export const useProjects = () => {
       })
 
       console.log('useProjects: API response:', response)
-      projects.value = response.data || []
-      console.log('useProjects: Projects set to:', projects.value)
+      projectsStore.setProjects(response.data || [])
+      console.log('useProjects: Projects set to:', response.data || [])
     } catch (err: any) {
       error.value = err.statusMessage || err.message || 'Failed to fetch projects'
       console.error('Error fetching projects:', err)
@@ -53,7 +54,7 @@ export const useProjects = () => {
       })
 
       const newProject = response.data
-      projects.value.unshift(newProject)
+      projectsStore.addProject(newProject)
       return newProject
     } catch (err: any) {
       error.value = err.statusMessage || err.message || 'Failed to create project'
@@ -71,11 +72,7 @@ export const useProjects = () => {
       })
 
       const updatedProject = response.data
-      const index = projects.value.findIndex(p => p.id === id)
-      if (index !== -1) {
-        projects.value[index] = updatedProject
-      }
-
+      projectsStore.updateProject(updatedProject)
       return updatedProject
     } catch (err: any) {
       error.value = err.statusMessage || err.message || 'Failed to update project'
@@ -91,7 +88,7 @@ export const useProjects = () => {
         headers: getAuthHeaders()
       })
 
-      projects.value = projects.value.filter(p => p.id !== id)
+      projectsStore.removeProject(id)
       return true
     } catch (err: any) {
       error.value = err.statusMessage || err.message || 'Failed to delete project'
@@ -101,7 +98,7 @@ export const useProjects = () => {
   }
 
   return {
-    projects: readonly(projects),
+    projects: projectsStore.projects,
     loading: readonly(loading),
     error: readonly(error),
     fetchProjects,

@@ -311,11 +311,11 @@ onMounted(async () => {
   if (authStore.user) {
     console.log('Fetching projects from database...')
     await fetchProjects()
-    console.log('Projects fetched:', projects.value)
+    console.log('Projects fetched:', projectsStore.projects)
     
     // If no current project but user has projects, set the first one as current
-    if (!projectsStore.hasCurrentProject && projects.value.length > 0) {
-      const firstProject = projects.value[0]
+    if (!projectsStore.hasCurrentProject && projectsStore.projects.length > 0) {
+      const firstProject = projectsStore.projects[0]
       if (firstProject) {
         console.log('Setting first project as current:', firstProject)
         projectsStore.setCurrentProject(firstProject)

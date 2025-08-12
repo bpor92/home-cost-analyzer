@@ -48,13 +48,13 @@
           <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
         </div>
         
-        <div v-else-if="projects.length === 0" class="text-sm text-gray-600 text-center py-4">
+        <div v-else-if="projectsStore.projects.length === 0" class="text-sm text-gray-600 text-center py-4">
           Brak projektów
         </div>
         
         <div v-else class="space-y-1">
           <button
-            v-for="project in projects"
+            v-for="project in projectsStore.projects"
             :key="project.id"
             @click="selectProject(project)"
             class="w-full text-left px-2 py-2 text-sm rounded-md transition-colors hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
@@ -91,7 +91,7 @@ import { useProjectsStore } from '~/stores/projects'
 import type { Project } from '~/types'
 import { FolderOpen, ChevronDown, Plus } from 'lucide-vue-next'
 
-const { projects, loading, fetchProjects } = useProjects()
+const { loading, fetchProjects } = useProjects()
 const projectsStore = useProjectsStore()
 
 const isOpen = ref(false)
