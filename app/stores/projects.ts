@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, readonly, computed } from 'vue'
+import { ref, computed } from 'vue'
 import type { Project } from '~/types'
 
 export const useProjectsStore = defineStore('projects', () => {
@@ -68,8 +68,8 @@ export const useProjectsStore = defineStore('projects', () => {
   }
 
   return {
-    currentProject: readonly(currentProject),
-    projects: readonly(projects),
+    currentProject,
+    projects,
     hasCurrentProject,
     setCurrentProject,
     addProject,

@@ -1,4 +1,4 @@
-import { ref, readonly } from 'vue'
+import { ref } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 import { useProjectsStore } from '~/stores/projects'
 import type { Project } from '~/types'
@@ -93,8 +93,8 @@ export const useProjects = () => {
 
   return {
     projects: projectsStore.projects,
-    loading: readonly(loading),
-    error: readonly(error),
+    loading,
+    error,
     fetchProjects,
     createProject,
     updateProject,

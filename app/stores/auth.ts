@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, readonly } from 'vue'
+import { ref } from 'vue'
 import type { User } from '~/types'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -97,8 +97,8 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   return {
-    user: readonly(user),
-    loading: readonly(loading),
+    user,
+    loading,
     initialize,
     signIn,
     signUp,
