@@ -8,10 +8,16 @@ export const useProjects = () => {
   const projectsStore = useProjectsStore()
   const loading = ref(false)
   const error = ref<string | null>(null)
+  const router = useRouter()
 
   const getAuthHeaders = () => {
     const token = authStore.user?.access_token
     return token ? { Authorization: `Bearer ${token}` } : undefined
+  }
+
+  const handle401Error = async () => {
+    await authStore.signOut()
+    await router.push('/auth/login')
   }
 
   const fetchProjects = async () => {
@@ -30,6 +36,10 @@ export const useProjects = () => {
 
       projectsStore.setProjects(response.data || [])
     } catch (err: any) {
+      if (err.statusCode === 401 || err.response?.status === 401) {
+        await handle401Error()
+        return
+      }
       error.value = err.statusMessage || err.message || 'Failed to fetch projects'
       console.error('Error fetching projects:', err)
     } finally {
@@ -51,6 +61,10 @@ export const useProjects = () => {
       projectsStore.addProject(newProject)
       return newProject
     } catch (err: any) {
+      if (err.statusCode === 401 || err.response?.status === 401) {
+        await handle401Error()
+        return null
+      }
       error.value = err.statusMessage || err.message || 'Failed to create project'
       console.error('Error creating project:', err)
       return null
@@ -69,6 +83,10 @@ export const useProjects = () => {
       projectsStore.updateProject(updatedProject)
       return updatedProject
     } catch (err: any) {
+      if (err.statusCode === 401 || err.response?.status === 401) {
+        await handle401Error()
+        return null
+      }
       error.value = err.statusMessage || err.message || 'Failed to update project'
       console.error('Error updating project:', err)
       return null
@@ -85,6 +103,10 @@ export const useProjects = () => {
       projectsStore.removeProject(id)
       return true
     } catch (err: any) {
+      if (err.statusCode === 401 || err.response?.status === 401) {
+        await handle401Error()
+        return false
+      }
       error.value = err.statusMessage || err.message || 'Failed to delete project'
       console.error('Error deleting project:', err)
       return false
