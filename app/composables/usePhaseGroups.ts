@@ -18,7 +18,6 @@ export function usePhaseGroups() {
   })
 
   async function fetchGroups(projectId: string) {
-    console.log('fetchGroups not yet implemented via API', { projectId })
     groups.value = []
   }
 
@@ -43,27 +42,22 @@ export function usePhaseGroups() {
   }
 
   async function createGroup(projectId: string, groupData: Omit<PhaseGroup, 'id' | 'project_id' | 'created_at' | 'updated_at'>) {
-    console.log('createGroup not yet implemented via API', { projectId, groupData })
     return null
   }
 
   async function updateGroup(groupId: string, updates: Partial<PhaseGroup>) {
-    console.log('updateGroup not yet implemented via API', { groupId, updates })
     return null
   }
 
   async function deleteGroup(groupId: string) {
-    console.log('deleteGroup not yet implemented via API', { groupId })
     return false
   }
 
   async function bulkUpdateGroupOrder(groupUpdates: { id: string; order_index: number }[]) {
-    console.log('bulkUpdateGroupOrder not yet implemented via API', { groupUpdates })
     return false
   }
 
   async function assignPhaseToGroup(phaseId: string, groupId: string | null) {
-    console.log('assignPhaseToGroup not yet implemented via API', { phaseId, groupId })
     return false
   }
 

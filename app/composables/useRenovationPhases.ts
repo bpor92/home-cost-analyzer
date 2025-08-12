@@ -49,27 +49,22 @@ export function useRenovationPhases() {
   }
 
   async function createPhase(projectId: string, phaseData: any) {
-    console.log('createPhase not yet implemented via API', { projectId, phaseData })
     return null
   }
 
   async function updatePhase(phaseId: string, updates: any) {
-    console.log('updatePhase not yet implemented via API', { phaseId, updates })
     return null
   }
 
   async function deletePhase(phaseId: string) {
-    console.log('deletePhase not yet implemented via API', { phaseId })
     return false
   }
 
   async function updatePhaseOrder(phaseId: string, newOrderIndex: number) {
-    console.log('updatePhaseOrder not yet implemented via API', { phaseId, newOrderIndex })
     return false
   }
 
   async function bulkUpdatePhaseOrder(phaseUpdates: { id: string; order_index: number }[]) {
-    console.log('bulkUpdatePhaseOrder not yet implemented via API', { phaseUpdates })
     return false
   }
 

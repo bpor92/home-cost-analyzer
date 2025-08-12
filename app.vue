@@ -13,9 +13,7 @@ import { useAuthStore } from '~/stores/auth'
 const authStore = useAuthStore()
 
 onMounted(async () => {
-  console.log('App.vue onMounted - initializing auth...')
   await authStore.initialize()
-  console.log('App.vue auth initialized, user:', authStore.user)
 })
 
 // Global configuration for the app

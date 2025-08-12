@@ -66,12 +66,10 @@ export function useBudgetCategories() {
   }
 
   async function updateCategory(categoryId: string, updates: Partial<BudgetCategory>) {
-    console.log('updateCategory not yet implemented via API', { categoryId, updates })
     return null
   }
 
   async function deleteCategory(categoryId: string) {
-    console.log('deleteCategory not yet implemented via API', { categoryId })
     return false
   }
 

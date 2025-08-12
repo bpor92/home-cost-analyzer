@@ -102,27 +102,22 @@ export const useBudget = (projectId: Ref<string | null>) => {
 
   // Simplified functions for now - TODO: implement API endpoints
   const updateBudgetCategory = async (id: string, updates: Partial<BudgetCategory>) => {
-    console.log('updateBudgetCategory not yet implemented via API', { id, updates })
     return null
   }
 
   const deleteBudgetCategory = async (id: string) => {
-    console.log('deleteBudgetCategory not yet implemented via API', { id })
     return false
   }
 
   const addBorrowedFund = async (fundData: Omit<BorrowedFund, 'id' | 'project_id' | 'created_at'>) => {
-    console.log('addBorrowedFund not yet implemented via API', { fundData })
     return null
   }
 
   const updateBorrowedFund = async (id: string, updates: Partial<BorrowedFund>) => {
-    console.log('updateBorrowedFund not yet implemented via API', { id, updates })
     return null
   }
 
   const deleteBorrowedFund = async (id: string) => {
-    console.log('deleteBorrowedFund not yet implemented via API', { id })
     return false
   }
 

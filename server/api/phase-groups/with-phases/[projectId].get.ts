@@ -78,15 +78,12 @@ export default defineEventHandler(
         const phases = phasesByGroup[group.id] || []
         const totalBudget = phases.reduce((sum, phase) => {
           const budget = parseFloat(phase.budget) || 0
-          console.log('Phase budget:', phase.name, phase.budget, '-> parsed:', budget)
           return sum + budget
         }, 0)
         const totalProgress = phases.length > 0 
           ? phases.reduce((sum, phase) => sum + (phase.progress || 0), 0) / phases.length 
           : 0
         const completedPhases = phases.filter(phase => phase.status === 'completed').length
-
-        console.log('Group:', group.name, 'phases:', phases.length, 'totalBudget:', totalBudget)
 
         return {
           ...group,

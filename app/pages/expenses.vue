@@ -481,7 +481,6 @@ const canSaveExpense = computed(() => {
 
 // Methods
 const openAddModal = () => {
-  console.log('🔵 Opening add expense modal')
   showAddExpenseModal.value = true
 }
 
@@ -527,18 +526,11 @@ const closeExpenseModal = () => {
 }
 
 const saveExpense = async () => {
-  console.log('=== saveExpense function called ===')
-  console.log('canSaveExpense:', canSaveExpense.value)
-  console.log('currentProjectId:', currentProjectId.value)
-  console.log('expenseForm:', expenseForm.value)
-  
   if (!canSaveExpense.value) {
-    console.log('❌ Cannot save - form validation failed')
     return
   }
   
   if (!currentProjectId.value) {
-    console.log('❌ Cannot save - no current project')
     return
   }
 
@@ -553,17 +545,12 @@ const saveExpense = async () => {
     receipt_photo_url: null
   }
 
-  console.log('💾 Saving expense data:', expenseData)
-
   try {
     if (editingExpense.value) {
-      console.log('📝 Updating existing expense')
       await updateExpense(editingExpense.value.id, expenseData)
     } else {
-      console.log('➕ Adding new expense')
       await addExpense(expenseData)
     }
-    console.log('✅ Expense saved successfully')
     closeExpenseModal()
   } catch (error) {
     console.error('❌ Error saving expense:', error)

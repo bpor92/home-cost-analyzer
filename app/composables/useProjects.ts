@@ -15,10 +15,7 @@ export const useProjects = () => {
   }
 
   const fetchProjects = async () => {
-    console.log('useProjects: fetchProjects called')
-    
     if (!authStore.user) {
-      console.log('useProjects: No user found, returning early')
       return
     }
     
@@ -26,15 +23,12 @@ export const useProjects = () => {
     error.value = null
     
     try {
-      console.log('useProjects: Making API call')
       const response = await $fetch('/api/projects', {
         method: 'GET',
         headers: getAuthHeaders()
       })
 
-      console.log('useProjects: API response:', response)
       projectsStore.setProjects(response.data || [])
-      console.log('useProjects: Projects set to:', response.data || [])
     } catch (err: any) {
       error.value = err.statusMessage || err.message || 'Failed to fetch projects'
       console.error('Error fetching projects:', err)

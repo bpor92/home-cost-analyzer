@@ -293,39 +293,28 @@ const formatDate = (date: string) => {
 
 
 onMounted(async () => {
-  console.log('Dashboard onMounted - starting...')
-  
   // Initialize auth first if not already done
   const authStore = useAuthStore()
   if (!authStore.user && authStore.loading) {
-    console.log('Auth not initialized, waiting...')
     await authStore.initialize()
   }
-  console.log('Auth user after init:', authStore.user)
   
   // Load current project from localStorage
   projectsStore.loadCurrentProject()
-  console.log('Current project from localStorage:', projectsStore.currentProject)
   
   // If user is authenticated, fetch all projects from database
   if (authStore.user) {
-    console.log('Fetching projects from database...')
     await fetchProjects()
-    console.log('Projects fetched:', projectsStore.projects)
     
     // If no current project but user has projects, set the first one as current
     if (!projectsStore.hasCurrentProject && projectsStore.projects.length > 0) {
       const firstProject = projectsStore.projects[0]
       if (firstProject) {
-        console.log('Setting first project as current:', firstProject)
         projectsStore.setCurrentProject(firstProject)
       }
     }
   } else {
-    console.log('No user found, redirecting to login...')
     await navigateTo('/auth/login')
   }
-  
-  console.log('Dashboard initialization complete')
 })
 </script>
