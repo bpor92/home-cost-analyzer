@@ -1,18 +1,15 @@
-import { ref, readonly, watch, computed } from 'vue'
+import { ref, watch, computed } from 'vue'
 import type { Ref } from 'vue'
 import { useAuthStore } from '~/stores/auth'
+import { useApiClient } from './useApiClient'
 import type { Expense, ExpenseWithCategory, FilterOptions } from '~/types'
 
 export const useExpenses = (projectId: Ref<string | null>) => {
   const authStore = useAuthStore()
+  const { apiCall, createCrudOperations } = useApiClient()
   const expenses = ref<ExpenseWithCategory[]>([])
-  const loading = ref(false)
-  const error = ref<string | null>(null)
-
-  const getAuthHeaders = () => {
-    const token = authStore.user?.access_token
-    return token ? { Authorization: `Bearer ${token}` } : undefined
-  }
+  
+  const { loading, error, withErrorHandling } = createCrudOperations<ExpenseWithCategory>('/api/expenses')
 
   const fetchExpenses = async () => {
     if (!projectId.value) {
@@ -20,104 +17,68 @@ export const useExpenses = (projectId: Ref<string | null>) => {
       return
     }
 
-    loading.value = true
-    error.value = null
+    const result = await withErrorHandling(async () => {
+      return await apiCall<{ data: ExpenseWithCategory[] }>(`/api/expenses/${projectId.value}`)
+    })
 
-    const headers = getAuthHeaders()
-
-    try {
-      // @ts-ignore - Complex Nuxt route typing issue
-      const response = await $fetch(`/api/expenses/${projectId.value}`, {
-        headers
-      }) as { data: ExpenseWithCategory[] }
-      const data = response.data
-      expenses.value = data || []
-    } catch (err: any) {
-      console.error('Error fetching expenses:', err)
-      error.value = err.message || 'Failed to fetch expenses'
+    if (result) {
+      expenses.value = result.data || []
+    } else {
       expenses.value = []
-    } finally {
-      loading.value = false
     }
   }
 
   const addExpense = async (expenseData: Omit<Expense, 'id' | 'created_at'>) => {
-    loading.value = true
-    error.value = null
-
-    try {
-      // @ts-ignore - Complex Nuxt route typing issue
-      const response = await $fetch('/api/expenses', {
+    const result = await withErrorHandling(async () => {
+      return await apiCall<{ data: ExpenseWithCategory }>('/api/expenses', {
         method: 'POST',
-        body: expenseData,
-        headers: getAuthHeaders()
-      }) as { data: ExpenseWithCategory }
-      const data = response.data
-      
+        body: expenseData
+      })
+    })
+
+    if (result) {
+      const data = result.data
       if (data) {
         expenses.value.unshift(data)
       }
-      
       return data
-    } catch (err: any) {
-      console.error('Error adding expense:', err)
-      error.value = err.message || 'Failed to add expense'
-      throw err
-    } finally {
-      loading.value = false
     }
+    throw new Error('Failed to add expense')
   }
 
   const updateExpense = async (id: string, updates: Partial<Expense>) => {
-    loading.value = true
-    error.value = null
-
-    try {
-      // @ts-ignore - Complex Nuxt route typing issue
-      const response = await $fetch(`/api/expenses/${id}`, {
+    const result = await withErrorHandling(async () => {
+      return await apiCall<{ data: ExpenseWithCategory }>(`/api/expenses/${id}`, {
         method: 'PUT',
-        body: updates,
-        headers: getAuthHeaders()
-      }) as { data: ExpenseWithCategory }
-      const data = response.data
-      
+        body: updates
+      })
+    })
+
+    if (result) {
+      const data = result.data
       if (data) {
         const index = expenses.value.findIndex(expense => expense.id === id)
         if (index !== -1) {
           expenses.value[index] = data
         }
       }
-      
       return data
-    } catch (err: any) {
-      console.error('Error updating expense:', err)
-      error.value = err.message || 'Failed to update expense'
-      throw err
-    } finally {
-      loading.value = false
     }
+    throw new Error('Failed to update expense')
   }
 
   const deleteExpense = async (id: string) => {
-    loading.value = true
-    error.value = null
-
-    try {
-      // @ts-ignore - Complex Nuxt route typing issue
-      await $fetch(`/api/expenses/${id}`, {
-        method: 'DELETE',
-        headers: getAuthHeaders()
+    const result = await withErrorHandling(async () => {
+      return await apiCall(`/api/expenses/${id}`, {
+        method: 'DELETE'
       })
-      
+    })
+
+    if (result !== null) {
       expenses.value = expenses.value.filter(expense => expense.id !== id)
       return true
-    } catch (err: any) {
-      console.error('Error deleting expense:', err)
-      error.value = err.message || 'Failed to delete expense'
-      throw err
-    } finally {
-      loading.value = false
     }
+    throw new Error('Failed to delete expense')
   }
 
   const filterExpenses = (filters: FilterOptions) => {
@@ -196,9 +157,9 @@ export const useExpenses = (projectId: Ref<string | null>) => {
   }
 
   return {
-    expenses: readonly(expenses),
-    loading: readonly(loading),
-    error: readonly(error),
+    expenses,
+    loading,
+    error,
     totalSpent,
     expensesByCategory,
     fetchExpenses,

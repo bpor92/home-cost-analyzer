@@ -1,68 +1,50 @@
 import { ref, computed } from 'vue'
 import { useAuthStore } from '~/stores/auth'
+import { useApiClient } from './useApiClient'
 import type { BudgetCategory } from '~/types/database'
 
 export function useBudgetCategories() {
   const authStore = useAuthStore()
+  const { apiCall, createCrudOperations } = useApiClient()
   const categories = ref<BudgetCategory[]>([])
-  const loading = ref(false)
-  const error = ref<string | null>(null)
-
-  const getAuthHeaders = () => {
-    const token = authStore.user?.access_token
-    return token ? { Authorization: `Bearer ${token}` } : undefined
-  }
+  
+  const { loading, error, withErrorHandling } = createCrudOperations<BudgetCategory>('/api/budget-categories')
 
   const sortedCategories = computed(() => {
     return [...categories.value].sort((a, b) => a.name.localeCompare(b.name))
   })
 
   async function fetchCategories(projectId: string) {
-    loading.value = true
-    error.value = null
-    
-    try {
-      const response = await $fetch(`/api/budget-categories/${projectId}`, {
-        method: 'GET',
-        headers: getAuthHeaders()
+    const result = await withErrorHandling(async () => {
+      return await apiCall<{ data: BudgetCategory[] }>(`/api/budget-categories/${projectId}`, {
+        method: 'GET'
       })
+    })
 
-      categories.value = response.data || []
-    } catch (err: any) {
-      error.value = err.statusMessage || err.message || 'Błąd podczas pobierania kategorii'
-      console.error('Error fetching categories:', err)
-    } finally {
-      loading.value = false
+    if (result) {
+      categories.value = result.data || []
     }
   }
 
   async function createCategory(projectId: string, categoryData: Omit<BudgetCategory, 'id' | 'project_id' | 'created_at'>) {
-    loading.value = true
-    error.value = null
-
-    try {
-      const response = await $fetch('/api/budget-categories', {
+    const result = await withErrorHandling(async () => {
+      return await apiCall<{ data: BudgetCategory }>('/api/budget-categories', {
         method: 'POST',
-        headers: getAuthHeaders(),
         body: {
           project_id: projectId,
           ...categoryData
         }
       })
+    })
 
-      const newCategory = response.data
+    if (result) {
+      const newCategory = result.data
       if (newCategory) {
         categories.value.push(newCategory)
       }
-      
       return newCategory
-    } catch (err: any) {
-      error.value = err.statusMessage || err.message || 'Błąd podczas tworzenia kategorii'
-      console.error('Error creating category:', err)
-      throw err
-    } finally {
-      loading.value = false
     }
+    throw new Error('Błąd podczas tworzenia kategorii')
   }
 
   async function updateCategory(categoryId: string, updates: Partial<BudgetCategory>) {
