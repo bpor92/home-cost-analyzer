@@ -2,40 +2,40 @@
   <div class="relative">
     <button
       @click="isOpen = !isOpen"
-      class="flex items-center justify-between w-full px-3 py-2 text-sm bg-white border border-gray-300 rounded-md shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+      class="flex items-center justify-between w-full px-3 py-2 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
       :class="{ 'border-blue-500 ring-2 ring-blue-500': isOpen }"
     >
       <div class="flex items-center min-w-0">
-        <FolderOpen class="flex-shrink-0 h-4 w-4 text-gray-400 mr-2" />
+        <FolderOpen class="flex-shrink-0 h-4 w-4 text-gray-400 dark:text-gray-500 mr-2" />
         <div class="text-left min-w-0">
           <div 
             v-if="!projectsStore.initialized" 
-            class="text-gray-600 italic"
+            class="text-gray-600 dark:text-gray-400 italic"
           >
             Ładowanie...
           </div>
           <div 
             v-else-if="projectsStore.currentProject" 
-            class="font-medium text-gray-900 truncate"
+            class="font-medium text-gray-900 dark:text-white truncate"
           >
             {{ projectsStore.currentProject.name }}
           </div>
           <div 
             v-else 
-            class="text-gray-600 italic"
+            class="text-gray-600 dark:text-gray-400 italic"
           >
             Wybierz projekt
           </div>
           <div 
             v-if="projectsStore.currentProject" 
-            class="text-xs text-gray-600 truncate"
+            class="text-xs text-gray-600 dark:text-gray-400 truncate"
           >
             {{ formatCurrency(projectsStore.currentProject.total_budget) }}
           </div>
         </div>
       </div>
       <ChevronDown 
-        class="flex-shrink-0 h-4 w-4 text-gray-400 transition-transform"
+        class="flex-shrink-0 h-4 w-4 text-gray-400 dark:text-gray-500 transition-transform"
         :class="{ 'transform rotate-180': isOpen }"
       />
     </button>
@@ -43,10 +43,10 @@
     <!-- Dropdown -->
     <div
       v-if="isOpen"
-      class="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
+      class="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-60 overflow-auto"
     >
       <div class="p-2">
-        <div class="text-xs font-medium text-gray-600 uppercase tracking-wide mb-2">
+        <div class="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-2">
           Dostępne projekty
         </div>
         
@@ -54,7 +54,7 @@
           <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
         </div>
         
-        <div v-else-if="projectsStore.projects.length === 0" class="text-sm text-gray-600 text-center py-4">
+        <div v-else-if="projectsStore.projects.length === 0" class="text-sm text-gray-600 dark:text-gray-400 text-center py-4">
           Brak projektów
         </div>
         
@@ -63,23 +63,23 @@
             v-for="project in projectsStore.projects"
             :key="project.id"
             @click="selectProject(project)"
-            class="w-full text-left px-2 py-2 text-sm rounded-md transition-colors hover:bg-gray-100 focus:outline-none focus:bg-gray-100"
+            class="w-full text-left px-2 py-2 text-sm rounded-md transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-700"
             :class="{
-              'bg-blue-50 text-blue-900': projectsStore.currentProject?.id === project.id
+              'bg-blue-50 text-blue-900 dark:bg-blue-900 dark:text-blue-100': projectsStore.currentProject?.id === project.id
             }"
           >
-            <div class="font-medium">{{ project.name }}</div>
-            <div class="text-xs text-gray-600">
+            <div class="font-medium text-gray-900 dark:text-white">{{ project.name }}</div>
+            <div class="text-xs text-gray-600 dark:text-gray-400">
               {{ formatCurrency(project.total_budget) }}
             </div>
           </button>
         </div>
         
-        <div class="border-t border-gray-200 mt-2 pt-2">
+        <div class="border-t border-gray-200 dark:border-gray-600 mt-2 pt-2">
           <router-link
             to="/projects"
             @click="isOpen = false"
-            class="flex items-center w-full px-2 py-2 text-sm text-blue-600 rounded-md hover:bg-blue-50 transition-colors"
+            class="flex items-center w-full px-2 py-2 text-sm text-blue-600 dark:text-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
           >
             <Plus class="h-4 w-4 mr-2" />
             Zarządzaj projektami

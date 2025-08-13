@@ -2,7 +2,7 @@
   <div class="space-y-6">
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-      <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
       <div class="mt-4 sm:mt-0">
         <Button v-if="!hasCurrentProject" @click="showProjectModal = true">
           <Plus class="mr-2 h-4 w-4" />
@@ -14,15 +14,15 @@
     <!-- Loading State -->
     <div v-if="isLoading" class="text-center py-12">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-      <h3 class="mt-2 text-sm font-medium text-gray-900">Ładowanie...</h3>
-      <p class="mt-1 text-sm text-gray-600">Pobieranie danych projektu</p>
+      <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">Ładowanie...</h3>
+      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Pobieranie danych projektu</p>
     </div>
 
     <!-- Project Selection -->
     <div v-else-if="!hasCurrentProject" class="text-center py-12">
       <Home class="mx-auto h-12 w-12 text-gray-400" />
-      <h3 class="mt-2 text-sm font-medium text-gray-900">Brak aktywnego projektu</h3>
-      <p class="mt-1 text-sm text-gray-600">Rozpocznij od utworzenia nowego projektu remontu</p>
+      <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">Brak aktywnego projektu</h3>
+      <p class="mt-1 text-sm text-gray-600 dark:text-gray-300">Rozpocznij od utworzenia nowego projektu remontu</p>
       <div class="mt-6">
         <Button @click="showProjectModal = true">
           <Plus class="mr-2 h-4 w-4" />
@@ -43,22 +43,22 @@
               </div>
               <div class="ml-5 w-0 flex-1">
                 <dl>
-                  <dt class="text-sm font-medium text-gray-600 truncate">
+                  <dt class="text-sm font-medium text-gray-600 dark:text-gray-300 truncate">
                     {{ stat.name }}
                   </dt>
-                  <dd class="text-lg font-medium text-gray-900">
+                  <dd class="text-lg font-medium text-gray-900 dark:text-white">
                     {{ stat.value }}
                   </dd>
                 </dl>
               </div>
             </div>
           </div>
-          <div :class="`bg-${stat.color}-50 px-5 py-3`">
+          <div :class="getStatFooterClasses(stat.color)">
             <div class="text-sm">
-              <span :class="`text-${stat.color}-700 font-medium`">
+              <span :class="getStatTextClasses(stat.color)">
                 {{ stat.change }}
               </span>
-              <span class="text-gray-600"> {{ stat.changeText }}</span>
+              <span class="text-gray-600 dark:text-gray-300"> {{ stat.changeText }}</span>
             </div>
           </div>
         </Card>
@@ -69,7 +69,7 @@
         <!-- Budget Overview Chart -->
         <Card>
           <template #header>
-            <h3 class="text-lg font-medium text-gray-900">Podział budżetu</h3>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Podział budżetu</h3>
           </template>
           <div class="h-72">
             <BudgetPieChart 
@@ -82,7 +82,7 @@
         <!-- Expenses Timeline -->
         <Card>
           <template #header>
-            <h3 class="text-lg font-medium text-gray-900">Wydatki w czasie</h3>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white">Wydatki w czasie</h3>
           </template>
           <div class="h-64">
             <ExpensesTimelineChart 
@@ -95,7 +95,7 @@
       <!-- Budget Progress Chart -->
       <Card v-if="categories.length > 0">
         <template #header>
-          <h3 class="text-lg font-medium text-gray-900">Progress budżetu kategorii</h3>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white">Progress budżetu kategorii</h3>
         </template>
         <div class="h-80">
           <BudgetProgressChart 
@@ -111,7 +111,7 @@
         <Card>
           <template #header>
             <div class="flex items-center justify-between">
-              <h3 class="text-lg font-medium text-gray-900">Ostatnie wydatki</h3>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white">Ostatnie wydatki</h3>
               <NuxtLink
                 to="/expenses"
                 class="text-sm text-blue-600 hover:text-blue-500"
@@ -128,20 +128,20 @@
             >
               <div class="flex items-center">
                 <div class="h-8 w-8 bg-gray-100 rounded-full flex items-center justify-center">
-                  <Receipt class="h-4 w-4 text-gray-600" />
+                  <Receipt class="h-4 w-4 text-gray-600 dark:text-gray-400" />
                 </div>
                 <div class="ml-3">
-                  <p class="text-sm font-medium text-gray-900">{{ expense.name }}</p>
-                  <p class="text-xs text-gray-600">
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">{{ expense.name }}</p>
+                  <p class="text-xs text-gray-600 dark:text-gray-400">
                     {{ formatDate(expense.expense_date) }}
                   </p>
                 </div>
               </div>
-              <span class="text-sm font-medium text-gray-900">
+              <span class="text-sm font-medium text-gray-900 dark:text-white">
                 {{ formatCurrency(expense.amount) }}
               </span>
             </div>
-            <div v-if="recentExpenses.length === 0" class="text-center py-6 text-gray-600">
+            <div v-if="recentExpenses.length === 0" class="text-center py-6 text-gray-600 dark:text-gray-400">
               Brak wydatków do wyświetlenia
             </div>
           </div>
@@ -151,7 +151,7 @@
         <Card>
           <template #header>
             <div class="flex items-center justify-between">
-              <h3 class="text-lg font-medium text-gray-900">Nadchodzące etapy</h3>
+              <h3 class="text-lg font-medium text-gray-900 dark:text-white">Nadchodzące etapy</h3>
               <NuxtLink
                 to="/planning"
                 class="text-sm text-blue-600 hover:text-blue-500"
@@ -160,7 +160,7 @@
               </NuxtLink>
             </div>
           </template>
-          <div class="text-center py-6 text-gray-600">
+          <div class="text-center py-6 text-gray-600 dark:text-gray-400">
             <Calendar class="mx-auto h-8 w-8 mb-2" />
             Funkcja planowania etapów będzie dostępna wkrótce
           </div>
@@ -318,6 +318,26 @@ const formatDate = (date: string) => {
     day: 'numeric'
   })
 }
+
+const getStatFooterClasses = computed(() => (color: string) => {
+  const colorMap = {
+    blue: 'bg-blue-50 dark:bg-blue-900/20 px-5 py-3',
+    green: 'bg-green-50 dark:bg-green-900/20 px-5 py-3',
+    purple: 'bg-purple-50 dark:bg-purple-900/20 px-5 py-3',
+    orange: 'bg-orange-50 dark:bg-orange-900/20 px-5 py-3'
+  }
+  return colorMap[color as keyof typeof colorMap] || 'bg-gray-50 dark:bg-gray-700 px-5 py-3'
+})
+
+const getStatTextClasses = computed(() => (color: string) => {
+  const colorMap = {
+    blue: 'text-blue-700 dark:text-blue-300 font-medium',
+    green: 'text-green-700 dark:text-green-300 font-medium',
+    purple: 'text-purple-700 dark:text-purple-300 font-medium',
+    orange: 'text-orange-700 dark:text-orange-300 font-medium'
+  }
+  return colorMap[color as keyof typeof colorMap] || 'text-gray-700 dark:text-gray-300 font-medium'
+})
 
 
 onMounted(async () => {

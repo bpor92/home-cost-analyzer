@@ -1,5 +1,6 @@
 import { computed, type Ref } from 'vue'
 import type { ExpenseWithCategory, BudgetCategory } from '~/types'
+import { useDarkMode } from '~/composables/useDarkMode'
 
 export interface ChartColors {
   primary: string
@@ -13,6 +14,7 @@ export interface ChartColors {
 }
 
 export const useCharts = () => {
+  const { isDark } = useDarkMode()
   // Color palette for charts
   const chartColors: ChartColors = {
     primary: '#3B82F6',   // blue-500
@@ -226,7 +228,7 @@ export const useCharts = () => {
   }
 
   // Chart options
-  const getPieChartOptions = () => ({
+  const getPieChartOptions = computed(() => ({
     responsive: true,
     maintainAspectRatio: false,
     layout: {
@@ -248,10 +250,16 @@ export const useCharts = () => {
             size: 10
           },
           boxWidth: 10,
-          maxWidth: 150
+          maxWidth: 150,
+          color: isDark.value ? '#E5E7EB' : '#374151' // gray-200 : gray-700
         }
       },
       tooltip: {
+        backgroundColor: isDark.value ? '#1F2937' : '#FFFFFF', // gray-800 : white
+        titleColor: isDark.value ? '#F9FAFB' : '#111827', // gray-50 : gray-900
+        bodyColor: isDark.value ? '#E5E7EB' : '#374151', // gray-200 : gray-700
+        borderColor: isDark.value ? '#374151' : '#E5E7EB', // gray-700 : gray-200
+        borderWidth: 1,
         callbacks: {
           label: (context: any) => {
             const value = new Intl.NumberFormat('pl-PL', {
@@ -263,9 +271,9 @@ export const useCharts = () => {
         }
       }
     }
-  })
+  }))
 
-  const getLineChartOptions = () => ({
+  const getLineChartOptions = computed(() => ({
     responsive: true,
     maintainAspectRatio: false,
     interaction: {
@@ -277,7 +285,14 @@ export const useCharts = () => {
         display: true,
         title: {
           display: true,
-          text: 'Data'
+          text: 'Data',
+          color: isDark.value ? '#E5E7EB' : '#374151'
+        },
+        ticks: {
+          color: isDark.value ? '#9CA3AF' : '#6B7280'
+        },
+        grid: {
+          color: isDark.value ? '#374151' : '#E5E7EB'
         }
       },
       y: {
@@ -285,9 +300,11 @@ export const useCharts = () => {
         display: true,
         title: {
           display: true,
-          text: 'Kwota (PLN)'
+          text: 'Kwota (PLN)',
+          color: isDark.value ? '#E5E7EB' : '#374151'
         },
         ticks: {
+          color: isDark.value ? '#9CA3AF' : '#6B7280',
           callback: (value: any) => {
             return new Intl.NumberFormat('pl-PL', {
               style: 'currency',
@@ -295,11 +312,24 @@ export const useCharts = () => {
               minimumFractionDigits: 0
             }).format(value)
           }
+        },
+        grid: {
+          color: isDark.value ? '#374151' : '#E5E7EB'
         }
       }
     },
     plugins: {
+      legend: {
+        labels: {
+          color: isDark.value ? '#E5E7EB' : '#374151'
+        }
+      },
       tooltip: {
+        backgroundColor: isDark.value ? '#1F2937' : '#FFFFFF',
+        titleColor: isDark.value ? '#F9FAFB' : '#111827',
+        bodyColor: isDark.value ? '#E5E7EB' : '#374151',
+        borderColor: isDark.value ? '#374151' : '#E5E7EB',
+        borderWidth: 1,
         callbacks: {
           label: (context: any) => {
             const value = new Intl.NumberFormat('pl-PL', {
@@ -311,16 +341,24 @@ export const useCharts = () => {
         }
       }
     }
-  })
+  }))
 
-  const getBarChartOptions = () => ({
+  const getBarChartOptions = computed(() => ({
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top' as const
+        position: 'top' as const,
+        labels: {
+          color: isDark.value ? '#E5E7EB' : '#374151'
+        }
       },
       tooltip: {
+        backgroundColor: isDark.value ? '#1F2937' : '#FFFFFF',
+        titleColor: isDark.value ? '#F9FAFB' : '#111827',
+        bodyColor: isDark.value ? '#E5E7EB' : '#374151',
+        borderColor: isDark.value ? '#374151' : '#E5E7EB',
+        borderWidth: 1,
         callbacks: {
           label: (context: any) => {
             const value = new Intl.NumberFormat('pl-PL', {
@@ -336,15 +374,24 @@ export const useCharts = () => {
       x: {
         title: {
           display: true,
-          text: 'Kategorie'
+          text: 'Kategorie',
+          color: isDark.value ? '#E5E7EB' : '#374151'
+        },
+        ticks: {
+          color: isDark.value ? '#9CA3AF' : '#6B7280'
+        },
+        grid: {
+          color: isDark.value ? '#374151' : '#E5E7EB'
         }
       },
       y: {
         title: {
           display: true,
-          text: 'Kwota (PLN)'
+          text: 'Kwota (PLN)',
+          color: isDark.value ? '#E5E7EB' : '#374151'
         },
         ticks: {
+          color: isDark.value ? '#9CA3AF' : '#6B7280',
           callback: (value: any) => {
             return new Intl.NumberFormat('pl-PL', {
               style: 'currency',
@@ -352,10 +399,13 @@ export const useCharts = () => {
               minimumFractionDigits: 0
             }).format(value)
           }
+        },
+        grid: {
+          color: isDark.value ? '#374151' : '#E5E7EB'
         }
       }
     }
-  })
+  }))
 
   return {
     chartColors,

@@ -7,7 +7,7 @@
         class="w-full h-full"
       />
     </div>
-    <div v-else class="h-full flex items-center justify-center text-gray-500">
+    <div v-else class="h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
       <div class="text-center">
         <PieChart class="mx-auto h-12 w-12 mb-2 opacity-50" />
         <p class="text-sm">Brak danych do wyświetlenia</p>
@@ -49,7 +49,7 @@ const expensesRef = computed(() => props.expenses)
 const categoriesRef = computed(() => props.categories)
 
 const chartData = getBudgetOverviewData(categoriesRef, expensesRef)
-const chartOptions = getPieChartOptions()
+const chartOptions = getPieChartOptions
 
 const hasData = computed(() => {
   const firstDataset = chartData.value.datasets[0]

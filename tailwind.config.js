@@ -2,6 +2,7 @@ import forms from '@tailwindcss/forms'
 
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: 'class',
   content: [
     "./index.html",
     "./app/**/*.{vue,js,ts,jsx,tsx}",

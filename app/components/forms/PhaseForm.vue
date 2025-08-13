@@ -1,7 +1,7 @@
 <template>
   <form @submit.prevent="handleSubmit" class="space-y-6">
     <div>
-      <label for="name" class="block text-sm font-medium text-gray-700 mb-1">
+      <label for="name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
         Nazwa etapu *
       </label>
       <Input
@@ -15,7 +15,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label for="start_date" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="start_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Data rozpoczęcia
         </label>
         <Input
@@ -27,7 +27,7 @@
       </div>
       
       <div>
-        <label for="end_date" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="end_date" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Data zakończenia
         </label>
         <Input
@@ -41,7 +41,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label for="budget" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="budget" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Budżet (PLN)
         </label>
         <Input
@@ -56,13 +56,13 @@
       </div>
 
       <div>
-        <label for="priority" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="priority" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Priorytet
         </label>
         <select
           id="priority"
           v-model="formData.priority"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 bg-white transition-all duration-200"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 dark:text-white bg-white dark:bg-gray-800 transition-all duration-200"
         >
           <option value="low">Niski</option>
           <option value="medium">Średni</option>
@@ -73,13 +73,13 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label for="status" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Status
         </label>
         <select
           id="status"
           v-model="formData.status"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 bg-white transition-all duration-200"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 dark:text-white bg-white dark:bg-gray-800 transition-all duration-200"
         >
           <option value="planned">Planowany</option>
           <option value="in-progress">W trakcie</option>
@@ -88,7 +88,7 @@
       </div>
 
       <div>
-        <label for="progress" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="progress" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Postęp (%)
         </label>
         <input
@@ -107,13 +107,13 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <!-- Group Selection -->
       <div v-if="availableGroups && availableGroups.length > 0">
-        <label for="group" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="group" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Grupa etapów
         </label>
         <select
           id="group"
           v-model="formData.group_id"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 bg-white transition-all duration-200"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 dark:text-white bg-white dark:bg-gray-800 transition-all duration-200"
         >
           <option value="">Brak grupy</option>
           <option
@@ -129,13 +129,13 @@
 
       <!-- Category Selection -->
       <div v-if="availableCategories && availableCategories.length > 0">
-        <label for="category" class="block text-sm font-medium text-gray-700 mb-1">
+        <label for="category" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Kategoria budżetu
         </label>
         <select
           id="category"
           v-model="formData.category_id"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 bg-white transition-all duration-200"
+          class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-gray-900 dark:text-white bg-white dark:bg-gray-800 transition-all duration-200"
         >
           <option value="">Brak kategorii</option>
           <option
@@ -151,7 +151,7 @@
     </div>
 
     <div>
-      <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">
+      <label for="notes" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
         Notatki
       </label>
       <textarea

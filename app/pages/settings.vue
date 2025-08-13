@@ -60,11 +60,11 @@
         
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Język interfejsu</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Język interfejsu</label>
             <select 
               v-model="selectedLanguage"
               @change="changeLanguage"
-              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800"
             >
               <option value="pl">Polski</option>
               <option value="en">English</option>
@@ -72,11 +72,11 @@
           </div>
           
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Format daty</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Format daty</label>
             <select 
               v-model="dateFormat"
               @change="saveDateFormat"
-              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800"
             >
               <option value="dd/mm/yyyy">DD/MM/YYYY</option>
               <option value="mm/dd/yyyy">MM/DD/YYYY</option>

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label v-if="label" :for="inputId" class="block text-sm font-medium text-gray-700 mb-1">
+    <label v-if="label" :for="inputId" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
       {{ label }}
       <span v-if="required" class="text-red-500">*</span>
     </label>
@@ -24,7 +24,7 @@
     <p v-if="error" class="mt-1 text-sm text-red-600">
       {{ error }}
     </p>
-    <p v-else-if="hint" class="mt-1 text-sm text-gray-600">
+    <p v-else-if="hint" class="mt-1 text-sm text-gray-600 dark:text-gray-400">
       {{ hint }}
     </p>
   </div>
@@ -66,10 +66,10 @@ const inputId = computed(() => {
 })
 
 const inputClasses = computed(() => {
-  const baseClasses = 'block w-full rounded-md shadow-sm transition-all duration-200 sm:text-sm text-gray-900 placeholder-gray-400'
-  const normalClasses = 'border-gray-300 focus:border-emerald-500 focus:ring-emerald-500 focus:ring-2'
+  const baseClasses = 'block w-full rounded-md shadow-sm transition-all duration-200 sm:text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800'
+  const normalClasses = 'border-gray-300 dark:border-gray-600 focus:border-emerald-500 focus:ring-emerald-500 focus:ring-2'
   const errorClasses = 'border-red-300 focus:border-red-500 focus:ring-red-500 focus:ring-2'
-  const disabledClasses = 'bg-gray-50 text-gray-600 cursor-not-allowed'
+  const disabledClasses = 'bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-400 cursor-not-allowed'
   
   return [
     baseClasses,

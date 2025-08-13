@@ -1,15 +1,15 @@
 <template>
-  <header class="bg-white shadow-sm border-b border-gray-200">
+  <header class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
         <div class="flex items-center space-x-4">
           <button
             @click="$emit('toggleSidebar')"
-            class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+            class="md:hidden p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-700"
           >
             <Menu class="h-6 w-6" />
           </button>
-          <h1 class="ml-2 text-xl font-semibold text-gray-900">
+          <h1 class="ml-2 text-xl font-semibold text-gray-900 dark:text-white">
             {{ title }}
           </h1>
 
@@ -21,7 +21,16 @@
 
         <div class="flex items-center space-x-4">
           <button
-            class="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 relative"
+            @click="darkMode.toggle()"
+            class="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-700"
+            :title="darkMode.isDark.value ? 'Przełącz na jasny motyw' : 'Przełącz na ciemny motyw'"
+          >
+            <Moon v-if="darkMode.isDark.value" class="h-6 w-6" />
+            <Sun v-else class="h-6 w-6" />
+          </button>
+          
+          <button
+            class="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-700 relative"
           >
             <Bell class="h-6 w-6" />
             <span
@@ -35,7 +44,7 @@
           <div class="relative">
             <button
               @click="showUserMenu = !showUserMenu"
-              class="flex items-center space-x-2 p-2 rounded-md text-gray-700 hover:bg-gray-100"
+              class="flex items-center space-x-2 p-2 rounded-md text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
             >
               <div class="h-8 w-8 bg-primary-500 rounded-full flex items-center justify-center">
                 <ClientOnly>
@@ -63,19 +72,19 @@
             >
               <div
                 v-if="showUserMenu"
-                class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50"
+                class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-200 dark:border-gray-700"
                 @click.outside="showUserMenu = false"
               >
                 <NuxtLink
                   to="/settings"
                   @click="showUserMenu = false"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                 >
                   Ustawienia
                 </NuxtLink>
                 <button
                   @click="handleSignOut"
-                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
                 >
                   Wyloguj się
                 </button>
@@ -91,8 +100,9 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { Menu, Bell, ChevronDown } from 'lucide-vue-next'
+import { Menu, Bell, ChevronDown, Sun, Moon } from 'lucide-vue-next'
 import { useAuthStore } from '~/stores/auth'
+import { useDarkMode } from '~/composables/useDarkMode'
 import ProjectSelector from '~/components/ui/ProjectSelector.vue'
 
 interface Props {
@@ -111,6 +121,7 @@ defineEmits<{
 
 const router = useRouter()
 const authStore = useAuthStore()
+const darkMode = useDarkMode()
 const showUserMenu = ref(false)
 
 const userEmail = computed(() => authStore.user?.email || '')

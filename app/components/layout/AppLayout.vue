@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen bg-gray-50">
+  <div class="flex h-screen bg-gray-50 dark:bg-gray-900">
     <!-- Mobile sidebar -->
     <Transition
       enter-active-class="transition-opacity ease-linear duration-300"
@@ -11,7 +11,7 @@
     >
       <div v-if="showMobileSidebar" class="fixed inset-0 flex z-40 md:hidden">
         <div class="fixed inset-0 bg-gray-600 bg-opacity-75" @click="showMobileSidebar = false" />
-        <div class="relative flex-1 flex flex-col max-w-xs w-full bg-white">
+        <div class="relative flex-1 flex flex-col max-w-xs w-full bg-white dark:bg-gray-800">
           <div class="absolute top-0 right-0 -mr-12 pt-2">
             <button
               @click="showMobileSidebar = false"
@@ -27,13 +27,13 @@
 
     <!-- Desktop sidebar -->
     <div class="hidden md:flex md:w-64 md:flex-col">
-      <div class="flex-1 flex flex-col min-h-0 bg-white border-r border-gray-200">
-        <div class="flex items-center h-16 flex-shrink-0 px-4 bg-white border-b border-gray-200">
+      <div class="flex-1 flex flex-col min-h-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
+        <div class="flex items-center h-16 flex-shrink-0 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
           <div class="flex items-center">
             <div class="h-8 w-8 bg-blue-500 rounded-lg flex items-center justify-center">
               <Home class="h-5 w-5 text-white" />
             </div>
-            <span class="ml-2 text-xl font-semibold text-gray-900">
+            <span class="ml-2 text-xl font-semibold text-gray-900 dark:text-white">
               Remont App
             </span>
           </div>
