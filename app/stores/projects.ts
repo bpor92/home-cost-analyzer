@@ -5,6 +5,7 @@ import type { Project } from '~/types'
 export const useProjectsStore = defineStore('projects', () => {
   const currentProject = ref<Project | null>(null)
   const projects = ref<Project[]>([])
+  const initialized = ref(false)
 
   const hasCurrentProject = computed(() => !!currentProject.value)
   
@@ -22,6 +23,7 @@ export const useProjectsStore = defineStore('projects', () => {
 
   const setProjects = (newProjects: Project[]) => {
     projects.value = newProjects
+    initialized.value = true
   }
 
   const updateProject = (updatedProject: Project) => {
@@ -70,6 +72,7 @@ export const useProjectsStore = defineStore('projects', () => {
   return {
     currentProject,
     projects,
+    initialized,
     hasCurrentProject,
     setCurrentProject,
     addProject,

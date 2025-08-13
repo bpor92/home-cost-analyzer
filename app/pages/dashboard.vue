@@ -11,8 +11,15 @@
       </div>
     </div>
 
+    <!-- Loading State -->
+    <div v-if="isLoading" class="text-center py-12">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">Ładowanie...</h3>
+      <p class="mt-1 text-sm text-gray-600">Pobieranie danych projektu</p>
+    </div>
+
     <!-- Project Selection -->
-    <div v-if="!hasCurrentProject" class="text-center py-12">
+    <div v-else-if="!hasCurrentProject" class="text-center py-12">
       <Home class="mx-auto h-12 w-12 text-gray-400" />
       <h3 class="mt-2 text-sm font-medium text-gray-900">Brak aktywnego projektu</h3>
       <p class="mt-1 text-sm text-gray-600">Rozpocznij od utworzenia nowego projektu remontu</p>
@@ -212,6 +219,7 @@ import {
   Wallet, DollarSign, AlertTriangle, Target
 } from 'lucide-vue-next'
 import { useProjectsStore } from '~/stores/projects'
+import { useAuthStore } from '~/stores/auth'
 import { useProjects } from '~/composables/useProjects'
 import { useExpenses } from '~/composables/useExpenses'
 import { useBudget } from '~/composables/useBudget'
@@ -228,6 +236,7 @@ const projectsStore = useProjectsStore()
 const { projects, fetchProjects, createProject: createProjectApi } = useProjects()
 
 const showProjectModal = ref(false)
+const isLoading = ref(true)
 const newProject = ref({
   name: '',
   total_budget: '',
@@ -312,28 +321,32 @@ const formatDate = (date: string) => {
 
 
 onMounted(async () => {
-  // Initialize auth first if not already done
-  const authStore = useAuthStore()
-  if (!authStore.user && authStore.loading) {
-    await authStore.initialize()
-  }
-  
-  // Load current project from localStorage
-  projectsStore.loadCurrentProject()
-  
-  // If user is authenticated, fetch all projects from database
-  if (authStore.user) {
-    await fetchProjects()
-    
-    // If no current project but user has projects, set the first one as current
-    if (!projectsStore.hasCurrentProject && projectsStore.projects.length > 0) {
-      const firstProject = projectsStore.projects[0]
-      if (firstProject) {
-        projectsStore.setCurrentProject(firstProject)
-      }
+  try {
+    // Initialize auth first if not already done
+    const authStore = useAuthStore()
+    if (!authStore.user && authStore.loading) {
+      await authStore.initialize()
     }
-  } else {
-    await navigateTo('/auth/login')
+    
+    // Load current project from localStorage
+    projectsStore.loadCurrentProject()
+    
+    // If user is authenticated, fetch all projects from database
+    if (authStore.user) {
+      await fetchProjects()
+      
+      // If no current project but user has projects, set the first one as current
+      if (!projectsStore.hasCurrentProject && projectsStore.projects.length > 0) {
+        const firstProject = projectsStore.projects[0]
+        if (firstProject) {
+          projectsStore.setCurrentProject(firstProject)
+        }
+      }
+    } else {
+      await navigateTo('/auth/login')
+    }
+  } finally {
+    isLoading.value = false
   }
 })
 </script>

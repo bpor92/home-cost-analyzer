@@ -9,7 +9,13 @@
         <FolderOpen class="flex-shrink-0 h-4 w-4 text-gray-400 mr-2" />
         <div class="text-left min-w-0">
           <div 
-            v-if="projectsStore.currentProject" 
+            v-if="!projectsStore.initialized" 
+            class="text-gray-600 italic"
+          >
+            Ładowanie...
+          </div>
+          <div 
+            v-else-if="projectsStore.currentProject" 
             class="font-medium text-gray-900 truncate"
           >
             {{ projectsStore.currentProject.name }}
@@ -44,7 +50,7 @@
           Dostępne projekty
         </div>
         
-        <div v-if="loading" class="flex justify-center py-4">
+        <div v-if="loading || !projectsStore.initialized" class="flex justify-center py-4">
           <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
         </div>
         
