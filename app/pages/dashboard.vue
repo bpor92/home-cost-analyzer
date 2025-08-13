@@ -64,9 +64,11 @@
           <template #header>
             <h3 class="text-lg font-medium text-gray-900">Podział budżetu</h3>
           </template>
-          <div class="h-64 flex items-center justify-center text-gray-600">
-            <PieChart class="h-8 w-8 mr-2" />
-            Wykres będzie tutaj
+          <div class="h-72">
+            <BudgetPieChart 
+              :expenses="expenses" 
+              :categories="[...categories]" 
+            />
           </div>
         </Card>
 
@@ -75,12 +77,26 @@
           <template #header>
             <h3 class="text-lg font-medium text-gray-900">Wydatki w czasie</h3>
           </template>
-          <div class="h-64 flex items-center justify-center text-gray-600">
-            <TrendingUp class="h-8 w-8 mr-2" />
-            Wykres będzie tutaj
+          <div class="h-64">
+            <ExpensesTimelineChart 
+              :expenses="expenses"
+            />
           </div>
         </Card>
       </div>
+
+      <!-- Budget Progress Chart -->
+      <Card v-if="categories.length > 0">
+        <template #header>
+          <h3 class="text-lg font-medium text-gray-900">Progress budżetu kategorii</h3>
+        </template>
+        <div class="h-80">
+          <BudgetProgressChart 
+            :expenses="expenses" 
+            :categories="[...categories]" 
+          />
+        </div>
+      </Card>
 
       <!-- Recent Activity -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -192,7 +208,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { 
-  Plus, Home, Receipt, Calendar, PieChart, TrendingUp,
+  Plus, Home, Receipt, Calendar,
   Wallet, DollarSign, AlertTriangle, Target
 } from 'lucide-vue-next'
 import { useProjectsStore } from '~/stores/projects'
@@ -203,6 +219,9 @@ import Button from '~/components/ui/Button.vue'
 import Card from '~/components/ui/Card.vue'
 import Modal from '~/components/ui/Modal.vue'
 import Input from '~/components/ui/Input.vue'
+import BudgetPieChart from '~/components/charts/BudgetPieChart.vue'
+import ExpensesTimelineChart from '~/components/charts/ExpensesTimelineChart.vue'
+import BudgetProgressChart from '~/components/charts/BudgetProgressChart.vue'
 import type { Project } from '~/types'
 
 const projectsStore = useProjectsStore()
@@ -220,7 +239,7 @@ const currentProjectId = computed(() => projectsStore.currentProject?.id || null
 
 // Initialize composables
 const { expenses } = useExpenses(currentProjectId)
-const { budgetSummary } = useBudget(currentProjectId)
+const { budgetSummary, categories } = useBudget(currentProjectId)
 
 const recentExpenses = computed(() => expenses.value.slice(0, 5))
 
