@@ -10,6 +10,12 @@ export default defineNuxtConfig({
     supabaseUrl: process.env.SUPABASE_URL,
     supabaseServiceKey: process.env.SUPABASE_SERVICE_KEY,
     supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+    
+    // Public client-side environment variables
+    public: {
+      supabaseUrl: process.env.SUPABASE_URL,
+      supabaseAnonKey: process.env.SUPABASE_ANON_KEY,
+    }
   },
   
   // Modules

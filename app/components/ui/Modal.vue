@@ -28,7 +28,7 @@
           >
             <div
               v-if="isOpen"
-              class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
+              :class="modalClasses"
               @click.stop
             >
               <div class="sm:flex sm:items-start">
@@ -61,13 +61,15 @@ interface Props {
   show?: boolean
   title?: string
   closeOnBackdrop?: boolean
+  size?: 'sm' | 'md' | 'lg' | 'xl'
 }
 
 const props = withDefaults(defineProps<Props>(), {
   closeOnBackdrop: true,
   open: false,
   show: false,
-  modelValue: false
+  modelValue: false,
+  size: 'md'
 })
 
 const emit = defineEmits<{
@@ -76,7 +78,23 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean]
 }>()
 
-const isOpen = computed(() => props.modelValue ?? props.open ?? props.show)
+const isOpen = computed(() => {
+  // Use logical OR instead of nullish coalescing to properly handle boolean false
+  return props.modelValue || props.open || props.show
+})
+
+const modalClasses = computed(() => {
+  const baseClasses = 'inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:p-6'
+  
+  const sizeClasses = {
+    sm: 'sm:max-w-sm sm:w-full',
+    md: 'sm:max-w-lg sm:w-full',
+    lg: 'sm:max-w-4xl sm:w-full',
+    xl: 'sm:max-w-6xl sm:w-full'
+  }
+  
+  return `${baseClasses} ${sizeClasses[props.size]}`
+})
 
 const handleBackdropClick = () => {
   if (props.closeOnBackdrop) {

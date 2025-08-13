@@ -56,7 +56,14 @@ defineEmits<{
   focus: [event: FocusEvent]
 }>()
 
-const inputId = computed(() => `input-${Math.random().toString(36).substr(2, 9)}`)
+// Generate stable ID for SSR hydration
+let _inputId: string
+const inputId = computed(() => {
+  if (!_inputId) {
+    _inputId = `input-${Math.random().toString(36).substr(2, 9)}`
+  }
+  return _inputId
+})
 
 const inputClasses = computed(() => {
   const baseClasses = 'block w-full rounded-md shadow-sm transition-all duration-200 sm:text-sm text-gray-900 placeholder-gray-400'

@@ -3,7 +3,11 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
       <h1 class="text-2xl font-bold text-gray-900">Wydatki</h1>
-      <div class="mt-4 sm:mt-0">
+      <div class="mt-4 sm:mt-0 flex space-x-3">
+        <Button @click="openScannerModal" variant="outline">
+          <Scan class="mr-2 h-4 w-4" />
+          Skanuj paragon
+        </Button>
         <Button @click="openAddModal">
           <Plus class="mr-2 h-4 w-4" />
           Dodaj wydatek
@@ -131,12 +135,22 @@
               class="hover:bg-gray-50"
             >
               <td class="px-6 py-4 whitespace-nowrap">
-                <div>
-                  <div class="text-sm font-medium text-gray-900">
-                    {{ expense.name }}
-                  </div>
-                  <div v-if="expense.description" class="text-sm text-gray-600">
-                    {{ expense.description }}
+                <div class="flex items-start space-x-3">
+                  <div class="flex-1">
+                    <div class="flex items-center space-x-2">
+                      <span class="text-sm font-medium text-gray-900">
+                        {{ expense.name }}
+                      </span>
+                      <div v-if="expense.receipt_photo_url" class="group relative">
+                        <Receipt class="h-4 w-4 text-green-600 cursor-pointer" />
+                        <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                          Paragon dostępny
+                        </div>
+                      </div>
+                    </div>
+                    <div v-if="expense.description" class="text-sm text-gray-600 mt-1">
+                      {{ expense.description }}
+                    </div>
                   </div>
                 </div>
               </td>
@@ -352,6 +366,19 @@
         </div>
       </div>
     </div>
+
+    <!-- Receipt Scanner Modal -->
+    <Modal 
+      :show="showScannerModal" 
+      title="Skanuj paragon" 
+      size="lg"
+      @close="closeScannerModal"
+    >
+      <ReceiptScanner
+        @receipt-scanned="handleReceiptScanned"
+        @close="closeScannerModal"
+      />
+    </Modal>
   </div>
 </template>
 
@@ -359,7 +386,7 @@
 import { ref, computed, watch, watchEffect } from 'vue'
 import { 
   Plus, DollarSign, Receipt, TrendingUp,
-  ChevronLeft, ChevronRight
+  ChevronLeft, ChevronRight, Scan
 } from 'lucide-vue-next'
 import { useProjectsStore } from '~/stores/projects'
 import { useAuthStore } from '~/stores/auth'
@@ -369,6 +396,8 @@ import { useRenovationPhases } from '~/composables/useRenovationPhases'
 import Button from '~/components/ui/Button.vue'
 import Card from '~/components/ui/Card.vue'
 import Input from '~/components/ui/Input.vue'
+import Modal from '~/components/ui/Modal.vue'
+import ReceiptScanner from '~/components/ui/ReceiptScanner.vue'
 import type { ExpenseWithCategory } from '~/types'
 
 const projectsStore = useProjectsStore()
@@ -386,6 +415,7 @@ const { phases, fetchPhases } = useRenovationPhases()
 
 // Modal states
 const showAddExpenseModal = ref(false)
+const showScannerModal = ref(false)
 const editingExpense = ref<ExpenseWithCategory | null>(null)
 
 // Form data
@@ -395,7 +425,8 @@ const expenseForm = ref({
   phase_id: '',
   amount: '',
   expense_date: '' as string,
-  description: ''
+  description: '',
+  receipt_photo_url: ''
 })
 
 // Filters
@@ -484,6 +515,32 @@ const openAddModal = () => {
   showAddExpenseModal.value = true
 }
 
+const openScannerModal = () => {
+  showScannerModal.value = true
+}
+
+const closeScannerModal = () => {
+  showScannerModal.value = false
+}
+
+const handleReceiptScanned = (ocrResults: any) => {
+  // Auto-fill expense form with OCR results
+  expenseForm.value.name = ocrResults.merchantName || 'Zakup w sklepie'
+  expenseForm.value.amount = ocrResults.total || ''
+  expenseForm.value.expense_date = ocrResults.date || new Date().toISOString().split('T')[0]
+  expenseForm.value.receipt_photo_url = ocrResults.receiptImageUrl || ''
+  
+  // Add items to description if available
+  if (ocrResults.items && ocrResults.items.length > 0) {
+    const itemsList = ocrResults.items.map((item: any) => `${item.name}: ${item.price} PLN`).join('\n')
+    expenseForm.value.description = `Produkty:\n${itemsList}`
+  }
+  
+  // Close scanner and open expense form
+  closeScannerModal()
+  showAddExpenseModal.value = true
+}
+
 const clearFilters = () => {
   filters.value = {
     dateFrom: '',
@@ -501,7 +558,8 @@ const editExpense = (expense: ExpenseWithCategory) => {
     phase_id: expense.phase_id || '',
     amount: expense.amount.toString(),
     expense_date: expense.expense_date,
-    description: expense.description || ''
+    description: expense.description || '',
+    receipt_photo_url: expense.receipt_photo_url || ''
   }
 }
 
@@ -521,7 +579,8 @@ const closeExpenseModal = () => {
     phase_id: '',
     amount: '',
     expense_date: '',
-    description: ''
+    description: '',
+    receipt_photo_url: ''
   }
 }
 
@@ -542,7 +601,7 @@ const saveExpense = async () => {
     amount: parseFloat(expenseForm.value.amount),
     expense_date: expenseForm.value.expense_date,
     description: expenseForm.value.description || null,
-    receipt_photo_url: null
+    receipt_photo_url: expenseForm.value.receipt_photo_url || null
   }
 
   try {

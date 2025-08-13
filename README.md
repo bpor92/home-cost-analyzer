@@ -8,6 +8,7 @@ Nowoczesna aplikacja Vue 3 do zarządzania budżetem remontu mieszkania w stanie
 - **Autentykacja** - Rejestracja i logowanie użytkowników
 - **Dashboard** - Przegląd kluczowych wskaźników budżetu
 - **Wydatki** - Dodawanie, edycja i śledzenie wydatków z filtrowaniem
+- **Skanowanie paragonów** - OCR z automatycznym wypełnianiem danych wydatku
 - **Projekty** - Zarządzanie projektami remontu
 - **Responsywny design** - Działanie na desktop i mobile
 
@@ -126,7 +127,26 @@ CREATE POLICY "Users can manage their renovation phases" ON renovation_phases
   FOR ALL USING (auth.uid() = (SELECT user_id FROM projects WHERE id = project_id));
 ```
 
-b) **Skonfiguruj zmienne środowiskowe:**
+c) **✅ Storage bucket został już utworzony automatycznie!**
+
+Bucket `receipts` dla zdjęć paragonów został skonfigurowany z następującymi parametrami:
+- ✅ Nazwa: `receipts`
+- ✅ Public: `true` (łatwy dostęp do zdjęć)
+- ✅ File size limit: `5MB`
+- ✅ Allowed MIME types: `image/jpeg,image/png,image/webp`
+- ✅ RLS polityki dla bezpieczeństwa (foldery per użytkownik)
+
+Struktura plików w bucket:
+```
+receipts/
+├── {user_id_1}/
+│   ├── receipt_2025-08-13_abc123.jpg
+│   └── receipt_2025-08-13_def456.jpg
+└── {user_id_2}/
+    └── receipt_2025-08-13_ghi789.jpg
+```
+
+d) **Skonfiguruj zmienne środowiskowe:**
 
 Edytuj plik `.env` i uzupełnij danymi z Supabase:
 
@@ -157,7 +177,13 @@ Aplikacja będzie dostępna pod adresem: `http://localhost:5173`
    - Dodawaj wydatki z kategoriami i datami
    - Używaj filtrów do wyszukiwania
 
-4. **Monitor budżetu**
+4. **Skanowanie paragonów**
+   - W sekcji "Wydatki" kliknij "Skanuj paragon"
+   - Użyj kamery lub wybierz zdjęcie z galerii
+   - System automatycznie rozpozna sklep, datę i kwotę
+   - Sprawdź dane i dodaj wydatek do projektu
+
+5. **Monitor budżetu**
    - Dashboard pokazuje aktualne wykorzystanie budżetu
    - Karty z kluczowymi wskaźnikami
 
